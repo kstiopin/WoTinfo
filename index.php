@@ -1,17 +1,5 @@
 <?
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: POST, GET, OPTIONS, DELETE, PUT");
-header("Access-Control-Max-Age: 1000");
-header("Access-Control-Allow-Headers: x-requested-with, Content-Type, origin, authorization, accept, client-security-token");
-// DB connection
-$db_host     = "startweb.mysql.ukraine.com.ua";
-$db_user     = "startweb_ingear";
-$db_password = "qdjfptll";
-$db_name     = "startweb_ingear";
-
-$connection = @mysql_connect($db_host, $db_user, $db_password) or die("DB error connecting");
-mysql_select_db($db_name, $connection);
-mysql_query("SET NAMES utf8");
+require_once 'config/config.php';
 
 include_once('./includes/FirePHPCore/fb.php');
 
