@@ -60,7 +60,7 @@ li.click {
     border-bottom: 1px solid #BEBEBE;
     display: none;
 }
-#ntree-main {
+#main {
     background-image: url(http://worldoftanks.ru/static/3.26.0.2/common/css/scss/layout/img/ui-bg-tile.jpg);
     background-attachment: scroll;
     -webkit-background-size: 100%;

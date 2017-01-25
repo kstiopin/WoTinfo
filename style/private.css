@@ -1,0 +1,20 @@
+.red {
+    color: #f11919;
+}
+.yellow {
+    color: #c6bf1f;
+}
+.green {
+    color: #4A9C02;
+}
+.teal {
+    color: #25c2dd;
+}
+.violet {
+    color: #c64cff;
+}
+.tree {
+    display: none;
+    position: relative;
+    margin-top: 15px;
+}
