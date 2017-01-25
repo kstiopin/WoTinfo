@@ -26,22 +26,40 @@ $(document).ready(function() {
     $(`#${activeTab}`).show();
   });
 
-  // Check for new tanks
-  $.get(`https://api.worldoftanks.ru/wot/encyclopedia/tanks/${applicationId}`, function(resp) {
-    for (var key in resp.data) {
-      if (!resp.data.hasOwnProperty(key)) continue;
-      const tank = resp.data[key];
-      $.post('../ajax/add_tank.php', tank, function(resp) {});
-    }
-  });
-
-  // Get useData
+  // Get userData
   $.get(`https://api.worldoftanks.ru/wot/account/info/${applicationId}&account_id=${defaultAccount}`, function(resp) {
     userData = resp.data[defaultAccount];
+    fillAccountData(userData);
     $.get(`https://api.worldoftanks.ru/wot/account/tanks/${applicationId}&account_id=${defaultAccount}`, function(resp) {
-      userData.tankData = resp.data[defaultAccount];
+      userData.tankData = {};
+      resp.data[defaultAccount].forEach((tankStats) => {
+        userData.tankData[tankStats.tank_id] = Object.assign({}, { mastery: tankStats.mark_of_mastery }, tankStats.statistics);
+      });
       console.log('userData', userData);
-      fillAccountData(userData);
+      // Get tanks data for trees
+      $.get('../ajax/tanks.php', function(tankData) {
+        //console.log('tanks data', { tankData });
+        tankData.forEach((tank) => {
+          let tankDiv = `<div class="tblock column${tank.level} row${tank.row}">`;
+          tankDiv += `<div class="vicLogo"><img src="${tank.image_small}" /></div>`;
+          tankDiv += `<span class="mark" title="${tank.name}">${tank.name}</span>`;
+          tankDiv += `<span class="level">${tank.level}</span>`;
+          tankDiv += `<span class="class">${getTankTypeImg(tank.type)}</span>`;
+          if (tank.is_premium == 1) {
+            tankDiv += '<span class="golden"><img src="http://armor.kiev.ua/wot/images/gold.png" title="750" width="12" height="12" /></span>';
+          }
+          if (userData.tankData[tank.id]) {
+            tankDiv += `<span class="mastery"><img src="http://armor.kiev.ua/wot/images/awards/class${userData.tankData[tank.id].mastery}.png" alt=""></span>`;
+            const tankWinrate = userData.tankData[tank.id].wins / userData.tankData[tank.id].battles * 100;
+            tankDiv += `<div class="gamerstats">${userData.tankData[tank.id].battles} боёв<br>${userData.tankData[tank.id].wins} побед<br>${tankWinrate.toFixed(2)} %</div>`;
+            tankDiv += `<div class="gamerbattles ${getColor('winrate', tankWinrate)}">${userData.tankData[tank.id].battles}</div>`;
+          } else {
+            tankDiv += '<span style="position: absolute; width: 100%; height: 100%; top: 0px; background-color: rgba(0, 0, 0, 0.5);"></span>';
+          }
+          tankDiv += '</div>';
+          $(`#tree-${tank.nation}`).append(tankDiv);
+        });
+      });
     });
   });
 });
@@ -163,4 +181,31 @@ function listCreate(type) {
       });
     }
   } */
+}
+
+/**
+ * Check for new tanks on WG wiki
+ */
+function checkNweTanks() {
+  $.get(`https://api.worldoftanks.ru/wot/encyclopedia/tanks/${applicationId}`, function(resp) {
+    addNewTanks(resp.data);
+  });
+}
+
+/**
+ * Add new tanks to our DB from WG wiki
+ * @param tanks {object}
+ */
+function addNewTanks(tanks) {
+  for (var key in tanks) {
+    if (!tanks.hasOwnProperty(key)) continue;
+    const tank = tanks[key];
+    $.post('../ajax/add_tank.php', tank, function(resp) {});
+  }
+}
+
+function getTankTypeImg(type) {
+  const labels = { lightTank: 'Лёгкий танк', mediumTank: 'Средний танк', heavyTank: 'Тяжёлый танк', 'AT-SPG': 'ПТ САУ', SPG: 'САУ' };
+
+  return `<img src="http://armor.kiev.ua/wot/images/type-${type}.png" align="top" alt="${labels[type]}" title="${labels[type]}" />`;
 }
