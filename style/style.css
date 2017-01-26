@@ -130,7 +130,11 @@ li.active {
     background: linear-gradient(to bottom,  rgba(17,14,7,1) 3%,rgba(89,89,89,1) 18%,rgba(89,89,89,1) 42%,rgba(16,15,11,1) 82%); /* W3C */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#595959', endColorstr='#100f0b',GradientType=0 ); /* IE6-9 */
 }
-.tblock span {position: absolute; color: #bebebe; text-shadow: -1px -1px #000;}
+.tblock span:not(.ratings) {
+    position: absolute;
+    color: #bebebe;
+    text-shadow: -1px -1px #000;
+}
 .tblock .mark {
     bottom: 1px;
     right: 4px;
@@ -203,15 +207,18 @@ li.active {
 .column10 {position: absolute; left: 1458px;}
 .column11 {position: absolute; left: 1620px;}
 .gamerbattles {
-    background-color: #35352c;
+    background: rgba(53, 53, 44, 0.7);
     font-size: 10px;
     color: #444;
     margin: 0 auto;
     position: relative;
     text-align: center;
-    top: -3px;
-    width: 50px;
+    top: -10px;
+    width: 45px;
+    padding: 2px;
     border-radius: 4px 4px 4px 4px;
+    font-weight: bold;
+    z-index: 191;
 }
 .gamerstats {
     background-color: #FBFAD5;
@@ -233,7 +240,6 @@ li.active {
 .wishlist > a > span.mark.in_angar, span.in_angar { color: green!important; }
 /*div.in_angar { border: 1px solid yellow; }*/
 #hangar { z-index: 100; }
-.gamerbattles { font-weight: bold; z-index: 191; }
 .vicLogo img { max-height: 31px!important; }
 span.percent { position: relative; }
 .red { color: #FE0E00; }
