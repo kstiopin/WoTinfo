@@ -1,11 +1,12 @@
 if (localStorage.getItem("defaultAccount") === null) {
   localStorage.setItem('defaultAccount', 20250564);
 }
-const defaultAccount = localStorage.getItem('defaultAccount');
-const applicationId = '?application_id=f3e7f06d42e6f54f1d63ed6e7734848b';
-var userData = false;
-const tanksWN8 = {};
-var activeTab = 'main';
+const defaultAccount = localStorage.getItem('defaultAccount'),
+      applicationId = '?application_id=f3e7f06d42e6f54f1d63ed6e7734848b',
+      tanksWN8 = {};
+var userData = false,
+    tankData = false,
+    activeTab = 'main';
 
 $(document).ready(function() {
   // bind tabs
@@ -29,7 +30,6 @@ $(document).ready(function() {
   // Get userData
   $.get(`https://api.worldoftanks.ru/wot/account/info/${applicationId}&account_id=${defaultAccount}`, function(resp) {
     userData = resp.data[defaultAccount];
-    fillAccountData(userData);
     $.get(`https://api.worldoftanks.ru/wot/tanks/stats/${applicationId}&account_id=${defaultAccount}`, function(resp) {
       userData.tankData = {};
       resp.data[defaultAccount].forEach((tankStats) => {
@@ -38,11 +38,13 @@ $(document).ready(function() {
       console.log('userData', userData);
       // Get tanks data for trees and wn8 rating from http://stat.modxvm.com/wn8.json
       $.get('../ajax/tanks.php', function(resp) {
+        tankData = resp.tanks;
         JSON.parse(resp.wn8).data.forEach((tankWN8) => {
           tanksWN8[tankWN8.IDNum] = Object.assign({}, tankWN8);
         });
         console.log('wn8', tanksWN8);
-        buildNationTrees(resp.tanks);
+        fillAccountData(userData);
+        buildNationTrees(tankData);
       });
     });
   });
@@ -53,20 +55,60 @@ $(document).ready(function() {
  * @param data {object}
  */
 function fillAccountData(data) {
-  const { statistics } = data;
+  const { statistics, tankData } = data,
+        { battles, wins, xp, damage_dealt, frags, spotted, dropped_capture_points } = statistics.all,
+        winrate = wins / battles * 100,
+        averageExp = xp / battles,
+        averageDmg = damage_dealt / battles,
+        averageFrags = frags / battles,
+        averageSpotted = spotted / battles,
+        averageDef = dropped_capture_points / battles;
   $('#js-profile-name').html(`<a href="http://worldoftanks.ru/community/accounts/${data.account_id}-${data.nickname}/">${data.nickname}</a>`);
   $('#acc_input').val(data.account_id);
   $('#personal_rating').addClass(getColor('wg', data.global_rating)).html(data.global_rating);
-  // $('#personal_wn8').addClass(getColor('wn8', 2035)).html(2035);
-  const winrate = statistics.all.wins / statistics.all.battles * 100;
   $('#winrate').addClass(getColor('winrate', winrate)).html(`${(winrate).toFixed(2)}%`);
-  $('#total_battles').addClass(getColor('battles', statistics.all.battles)).html(statistics.all.battles);
-  const averageExp = statistics.all.xp / statistics.all.battles;
+  $('#total_battles').addClass(getColor('battles', battles)).html(battles);
   $('#average_exp').addClass(getColor('exp', averageExp)).html(averageExp.toFixed(2));
-  const averageDmg = statistics.all.damage_dealt / statistics.all.battles;
   $('#average_dmg').addClass(getColor('dmg', averageDmg)).html(averageDmg.toFixed(2));
   $('#armor_link').html(`<a href="http://armor.kiev.ua/wot/gamerstat/${data.nickname}">${data.nickname}</a>`);
   $('#noobmeter_link').html(`<a href="http://www.noobmeter.com/player/ru/${data.nickname.toLowerCase()}/${data.account_id}/">Noobmeter</a>`);
+  $('#wots_link').html(`<a href="http://wots.com.ua/user/stats/${data.nickname.toLowerCase()}">WOTS</a>`);
+  // подсчёт WN8
+  // считаем средний уровень
+  let btl = 0,
+      lvlbtl = 0;
+  Object.keys(userData.tankData).forEach((tid) => {
+    btl += userData.tankData[tid].all.battles;
+    lvlbtl += userData.tankData[tid].all.battles * tankData[tid].level;
+  });
+  const lvl = lvlbtl/btl;
+  // считаем WN8
+  var efrg = 0,
+      edmg = 0,
+      espo = 0,
+      edef = 0,
+      ewin = 0,
+      eb   = 0;
+  Object.keys(userData.tankData).forEach((tid) => {
+    var tb  = userData.tankData[tid].all.battles;
+    if (typeof(tanksWN8[tid]) !== "undefined") {
+      efrg += tb * tanksWN8[tid].expFrag;
+      edmg += tb * tanksWN8[tid].expDamage;
+      espo += tb * tanksWN8[tid].expSpot;
+      edef += tb * tanksWN8[tid].expDef;
+      ewin += tb * tanksWN8[tid].expWinRate;
+      eb   += tb;
+    }
+  });
+
+  var rWin  = Math.max(((winrate * eb / ewin - 0.71) / (1 - 0.71)), 0);
+  var rDmg  = Math.max(((averageDmg * eb / edmg - 0.22) / (1 - 0.22)), 0);
+  var rFrag = Math.max(Math.min(rDmg + 0.2,(( averageFrags * eb / efrg - 0.12) / (1 - 0.12))), 0);
+  var rSpot = Math.max(Math.min(rDmg + 0.1,(( averageSpotted * eb / espo - 0.38) / (1 - 0.38))), 0);
+  var rDef  = Math.max(Math.min(rDmg + 0.1,(( averageDef * eb / edef - 0.10) / (1 - 0.10))), 0);
+
+  const wn8  = 980 * rDmg + 210 * rDmg * rFrag + 155 * rFrag * rSpot + 75 * rDef * rFrag + 145 * Math.min(1.8, rWin);
+  $('#personal_wn8').addClass(getColor('wn8', wn8)).html(wn8.toFixed(0));
 }
 
 /**
@@ -90,10 +132,9 @@ function buildNationTrees(tankData) {
         tankDiv += `<span class="mastery"><img src="../images/class${mark_of_mastery}.png" alt=""></span>`;
       }
       const tankWinrate = all.wins / all.battles * 100;
-      tankDiv += `<div class="gamerstats">${all.battles} боёв<br>${all.wins} побед<br>${tankWinrate.toFixed(2)} %</div>`;
-      tankDiv += `<div class="gamerbattles"><span class="ratings ${getColor('winrate', tankWinrate)}">${all.battles}</span>`;
+      tankDiv += `<div class="gamerbattles">боёв <span class="ratings ${getColor('winrate', tankWinrate)}">${all.battles} (${tankWinrate.toFixed(0)}%)</span>`;
       const tankWN8 = calcTankWN8(tank.id, tankWinrate, all);
-      tankDiv += `<br/><span class="ratings wn8 ${getColor('wn8', tankWN8)}">${tankWN8}</span></div>`;
+      tankDiv += ` wn8 <span class="ratings ${getColor('wn8', tankWN8)}">${tankWN8}</span></div>`;
     } else {
       tankDiv += '<span style="position: absolute; width: 100%; height: 100%; top: 0px; background-color: rgba(0, 0, 0, 0.5);"></span>';
     }
@@ -113,13 +154,11 @@ function buildNationTrees(tankData) {
  * @returns {number}
  */
 function calcTankWN8(id, avgWinRate, data) {
-  console.log('calcTankWN8', id, avgWinRate, data);
   const rDAMAGE = (data.damage_dealt / data.battles) / tanksWN8[id].expDamage;
   const rSPOT = (data.spotted / data.battles) / tanksWN8[id].expSpot;
   const rFRAG = (data.frags / data.battles) / tanksWN8[id].expFrag;
   const rDEF = (data.dropped_capture_points / data.battles) / tanksWN8[id].expDef;
   const rWIN = avgWinRate / tanksWN8[id].expWinRate;
-  console.log('basic ratings', rDAMAGE, rSPOT, rFRAG, rDEF, rWIN);
   // Нормализованное значение =  max(нижняя граница, (взвешенное соотношение – константа ) / (1 – константа))
   const rWINc = Math.max(0, (rWIN - 0.71) / (1 - 0.71));
   const rDAMAGEc= Math.max(0, (rDAMAGE - 0.22) / (1 - 0.22));
@@ -139,71 +178,22 @@ function calcTankWN8(id, avgWinRate, data) {
  */
 function getColor(type, value) {
   let color = 'red';
-  if (type === 'wn8') {
-    if (value >= 2880) {
-      color = 'violet';
-    } else if (value >= 2180) {
-      color = 'teal';
-    } else if (value >= 1470) {
-      color = 'green';
-    } else if (value >= 900) {
-      color = 'yellow';
-    }
-  }
-  if (type === 'wg') {
-    if (value >= 10175) {
-      color = 'violet';
-    } else if (value >= 8730) {
-      color = 'teal';
-    } else if (value >= 6515) {
-      color = 'green';
-    } else if (value >= 4435) {
-      color = 'yellow';
-    }
-  }
-  if (type === 'winrate') {
-    if (value >= 65) {
-      color = 'violet';
-    } else if (value >= 58) {
-      color = 'teal';
-    } else if (value >= 53) {
-      color = 'green';
-    } else if (value >= 49) {
-      color = 'yellow';
-    }
-  }
-  if (type === 'battles') {
-    if (value >= 20000) {
-      color = 'violet';
-    } else if (value >= 14000) {
-      color = 'teal';
-    } else if (value >= 9000) {
-      color = 'green';
-    } else if (value >= 5000) {
-      color = 'yellow';
-    }
-  }
-  if (type === 'exp') {
-    if (value >= 1200) {
-      color = 'violet';
-    } else if (value >= 1100) {
-      color = 'teal';
-    } else if (value >= 800) {
-      color = 'green';
-    } else if (value >= 600) {
-      color = 'yellow';
-    }
-  }
-  if (type === 'dmg') {
-    if (value >= 2500) {
-      color = 'violet';
-    } else if (value >= 1800) {
-      color = 'teal';
-    } else if (value >= 1000) {
-      color = 'green';
-    } else if (value >= 750) {
-      color = 'yellow';
-    }
+  const types = {
+    wn8: [2880, 2180, 1470, 900],
+    wg: [10175, 8730, 6515, 4435],
+    winrate: [65, 58, 53, 49],
+    battles: [20000, 14000, 9000, 5000],
+    exp: [1200, 1100, 800, 600],
+    dmg: [2500, 1800, 1000, 750]
+  };
+  if (value >= types[type][0]) {
+    color = 'violet';
+  } else if (value >= types[type][1]) {
+    color = 'teal';
+  } else if (value >= types[type][2]) {
+    color = 'green';
+  } else if (value >= types[type][3]) {
+    color = 'yellow';
   }
 
   return color;
