@@ -10,17 +10,16 @@ $(document).ready(function() {
   // bind tabs
   $('#nations li').click(function() {
     const id = $(this).data("id");
-    if ((id === 'current') || (id === 'final')) {
-      listCreate(id);
-    }
     $('#nations li.active').removeClass('active');
     $(this).removeClass('click').addClass('active');
     $(`#${activeTab}`).hide();
     if (id === 'main') {
       activeTab = 'main';
+      $('.tree_head').hide();
       $('#ntree').hide();
     } else {
       activeTab = `tree-${id}`;
+      $('.tree_head').show();
       $('#ntree').show();
     }
     $(`#${activeTab}`).show();
@@ -37,28 +36,8 @@ $(document).ready(function() {
       });
       console.log('userData', userData);
       // Get tanks data for trees
-      $.get('../ajax/tanks.php', function(tankData) {
-        //console.log('tanks data', { tankData });
-        tankData.forEach((tank) => {
-          let tankDiv = `<div class="tblock column${tank.level} row${tank.row}">`;
-          tankDiv += `<div class="vicLogo"><img src="${tank.image_small}" /></div>`;
-          tankDiv += `<span class="mark" title="${tank.name}">${tank.name}</span>`;
-          tankDiv += `<span class="level">${tank.level}</span>`;
-          tankDiv += `<span class="class">${getTankTypeImg(tank.type)}</span>`;
-          if (tank.is_premium == 1) {
-            tankDiv += '<span class="golden"><img src="http://armor.kiev.ua/wot/images/gold.png" title="750" width="12" height="12" /></span>';
-          }
-          if (userData.tankData[tank.id]) {
-            tankDiv += `<span class="mastery"><img src="http://armor.kiev.ua/wot/images/awards/class${userData.tankData[tank.id].mastery}.png" alt=""></span>`;
-            const tankWinrate = userData.tankData[tank.id].wins / userData.tankData[tank.id].battles * 100;
-            tankDiv += `<div class="gamerstats">${userData.tankData[tank.id].battles} боёв<br>${userData.tankData[tank.id].wins} побед<br>${tankWinrate.toFixed(2)} %</div>`;
-            tankDiv += `<div class="gamerbattles ${getColor('winrate', tankWinrate)}">${userData.tankData[tank.id].battles}</div>`;
-          } else {
-            tankDiv += '<span style="position: absolute; width: 100%; height: 100%; top: 0px; background-color: rgba(0, 0, 0, 0.5);"></span>';
-          }
-          tankDiv += '</div>';
-          $(`#tree-${tank.nation}`).append(tankDiv);
-        });
+      $.get('../ajax/tanks.php', function(resp) {
+        buildNationTrees(resp);
       });
     });
   });
@@ -81,6 +60,40 @@ function fillAccountData(data) {
   $('#average_exp').addClass(getColor('exp', averageExp)).html(averageExp.toFixed(2));
   const averageDmg = statistics.all.damage_dealt / statistics.all.battles;
   $('#average_dmg').addClass(getColor('dmg', averageDmg)).html(averageDmg.toFixed(2));
+  $('#armor_link').html(`<a href="http://armor.kiev.ua/wot/gamerstat/${data.nickname}">${data.nickname}</a>`);
+  $('#noobmeter_link').html(`<a href="http://www.noobmeter.com/player/ru/${data.nickname.toLowerCase()}/${data.account_id}/">Noobmeter</a>`);
+}
+
+/**
+ * Build tank trees
+ * @param tankData {array}
+ */
+function buildNationTrees(tankData) {
+  tankData.forEach((tank) => {
+    let tankDiv = `<div class="tblock column${tank.level} row${tank.row}">`;
+    tankDiv += `<div class="vicLogo"><img src="${tank.image_small}" /></div>`;
+    tankDiv += `<span class="mark" title="${tank.name}">${tank.short_name}</span>`;
+    tankDiv += `<span class="level">${tank.level}</span>`;
+    tankDiv += `<span class="class">${getTankTypeImg(tank.type)}</span>`;
+    if (tank.is_premium == 1) {
+      tankDiv += '<span class="golden"><img src="http://armor.kiev.ua/wot/images/gold.png" title="750" width="12" height="12" /></span>';
+    }
+    if (userData.tankData[tank.id]) {
+      if (userData.tankData[tank.id].mastery > 0) {
+        tankDiv += `<span class="mastery"><img src="http://armor.kiev.ua/wot/images/awards/class${userData.tankData[tank.id].mastery}.png" alt=""></span>`;
+      }
+      const tankWinrate = userData.tankData[tank.id].wins / userData.tankData[tank.id].battles * 100;
+      tankDiv += `<div class="gamerstats">${userData.tankData[tank.id].battles} боёв<br>${userData.tankData[tank.id].wins} побед<br>${tankWinrate.toFixed(2)} %</div>`;
+      tankDiv += `<div class="gamerbattles ${getColor('winrate', tankWinrate)}">${userData.tankData[tank.id].battles}</div>`;
+    } else {
+      tankDiv += '<span style="position: absolute; width: 100%; height: 100%; top: 0px; background-color: rgba(0, 0, 0, 0.5);"></span>';
+    }
+    if (tank.relations) {
+      tankDiv += tank.relations;
+    }
+    tankDiv += '</div>';
+    $(`#tree-${tank.nation}`).append(tankDiv);
+  });
 }
 
 /**
@@ -162,32 +175,11 @@ function getColor(type, value) {
 }
 
 /**
- * Show player tanks
- * @param type {string} current or prognosed angar
- */
-function listCreate(type) {
-  console.log('listCreate', type, 'need data from trees first');
-  /*
-  $('#ntree div.treeWrapper div#tree').html('');
-  var array = (type === 'final') ? wishlist_divs : current_divs;
-
-  for (var i = 1; i < 11; i++) {
-    var row = 1;
-    if (typeof(array['column' + i]) !== 'undefined') {
-      $.each(array['column' + i], function(key, val) {
-        $('#ntree div.treeWrapper div#tree').append('<div class="tblock column' + i + ' row' + row + '">' + val + '</div>');
-        $('#ntree div.treeWrapper div#tree > div > img').remove();
-        row++;
-      });
-    }
-  } */
-}
-
-/**
  * Check for new tanks on WG wiki
  */
-function checkNweTanks() {
+function checkNewTanks() {
   $.get(`https://api.worldoftanks.ru/wot/encyclopedia/tanks/${applicationId}`, function(resp) {
+    console.log('tanks from wiki', resp);
     addNewTanks(resp.data);
   });
 }
@@ -204,8 +196,13 @@ function addNewTanks(tanks) {
   }
 }
 
+/**
+ * Get tank type img
+ * @param type {string}
+ * @returns img {<img />}
+ */
 function getTankTypeImg(type) {
   const labels = { lightTank: 'Лёгкий танк', mediumTank: 'Средний танк', heavyTank: 'Тяжёлый танк', 'AT-SPG': 'ПТ САУ', SPG: 'САУ' };
 
-  return `<img src="http://armor.kiev.ua/wot/images/type-${type}.png" align="top" alt="${labels[type]}" title="${labels[type]}" />`;
+  return `<img src="../images/type-${type}.png" align="top" alt="${labels[type]}" title="${labels[type]}" />`;
 }

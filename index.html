@@ -12,10 +12,8 @@
 </head>
 <body>
     <div id="content">
-        <ul id="nations" style="margin-top: 13px;">
+        <ul id="nations">
             <li data-id="main" class="active">Статистика</li>
-            <li data-id="current" class="click">Текущий ангар</li>
-            <li data-id="final" class="click">Целевой ангар</li>
             <li data-id="ussr" class="click">СССР</li>
             <li data-id="germany" class="click">Германия</li>
             <li data-id="usa" class="click">США</li>
@@ -80,11 +78,12 @@
         <div class="clear"></div>
     </div>
     <div class="tree_head">
-        <h1 style="display: inline;">WoT :: <a href="http://armor.kiev.ua/wot/gamerstat/<?=$def_nick;?>"><?=$def_nick;?></a> (<a href="http://www.noobmeter.com/player/ru/<?=strtolower($def_nick);?>/<?=$def_acc;?>/">Noobmeter</a>, <a href="http://wots.com.ua/user/stats/<?=strtolower($def_nick);?>">WOTS</a>, <a href="https://kttc.ru/wot/ru/user/<?=strtolower($def_nick);?>/">KTTC</a>) — техника игрока в <a href="http://armor.kiev.ua/wot/gamertrees/<?=$def_nick;?>">дереве</a> развития</h1>
+        <h1 style="display: inline;">WoT :: <span id="armor_link"></span> (<span id="noobmeter_link"></span>, <a href="http://wots.com.ua/user/stats/<?=strtolower($def_nick);?>">WOTS</a>, <a href="https://kttc.ru/wot/ru/user/<?=strtolower($def_nick);?>/">KTTC</a>) — техника игрока в <a href="http://armor.kiev.ua/wot/gamertrees/<?=$def_nick;?>">дереве</a> развития</h1>
         <span onclick="show_counters();" class="pointer green">Показать количество боев</span>
     </div>
     <div class="nationTree" id="ntree">
-        <div class="treeWrapper"><div class="levelLine" style="left:0px;"></div>
+        <div class="treeWrapper">
+            <div class="levelLine" style="left:0px;"></div>
             <div class="levelLine" style="left: 324px;"></div>
             <div class="levelLine" style="left: 648px;"></div>
             <div class="levelLine" style="left: 972px;"></div>
