@@ -626,13 +626,6 @@ p {
   padding: 0 16px;
 }
 
-.b-region-active {
-  cursor: pointer;
-  position: relative;
-  padding: 1px 23px 1px 5px;
-  background: url(http://worldoftanks.ru/static/3.26.0.2/common/css/scss/portalmenu/img/topmenu-spaser.png) no-repeat 100% 1px;
-}
-
 .opened .b-visible-wnd {
   background: #050403;
   border: 1px solid #1e1e1e;
@@ -7013,7 +7006,7 @@ h6,.b-header-h6 {
 }
 
 .b-user-block__sparks {
-  background-image: url(http://worldoftanks.ru/static/3.26.0.2/common/css/scss/content/user/img/sparks.jpg);
+  background-image: url('../images/sparks.jpg');
   background-position: 50% 0;
   background-repeat: no-repeat;
 }
@@ -7270,7 +7263,7 @@ h6,.b-header-h6 {
 }
 
 .t-personal-data_ico {
-  background: url(http://worldoftanks.ru/static/3.26.0.2/common/css/scss/content/user/img/speedometr-param.png) no-repeat 0 0;
+  background: url('../images/speedometr-param.png') no-repeat 0 0;
   padding: 82px 8px 3px;
   vertical-align: middle;
 }
@@ -7339,7 +7332,7 @@ h6,.b-header-h6 {
 }
 
 .t-personal-data_pr {
-  background: url(http://worldoftanks.ru/static/3.26.0.2/common/css/scss/content/user/img/pr.png) no-repeat 50% 0;
+  background: url('../images/pr.png') no-repeat 50% 0;
   padding-top: 130px;
   vertical-align: top;
   width: 166px;

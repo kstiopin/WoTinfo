@@ -61,7 +61,7 @@ li.click {
     display: none;
 }
 #main {
-    background-image: url(http://worldoftanks.ru/static/3.26.0.2/common/css/scss/layout/img/ui-bg-tile.jpg);
+    background-image: url('../images/ui-bg-tile.jpg');
     background-attachment: scroll;
     -webkit-background-size: 100%;
     background-size: 100%;

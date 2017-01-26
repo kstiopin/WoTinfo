@@ -27,12 +27,20 @@ $(document).ready(function() {
     $(`#${activeTab}`).show();
   });
 
+  getUser(defaultAccount);
+});
+
+/**
+ * Load data for an account
+ * @param accountId {int}
+ */
+function getUser(accountId) {
   // Get userData
-  $.get(`https://api.worldoftanks.ru/wot/account/info/${applicationId}&account_id=${defaultAccount}`, function(resp) {
-    userData = resp.data[defaultAccount];
-    $.get(`https://api.worldoftanks.ru/wot/tanks/stats/${applicationId}&account_id=${defaultAccount}`, function(resp) {
+  $.get(`https://api.worldoftanks.ru/wot/account/info/${applicationId}&account_id=${accountId}`, function(resp) {
+    userData = resp.data[accountId];
+    $.get(`https://api.worldoftanks.ru/wot/tanks/stats/${applicationId}&account_id=${accountId}`, function(resp) {
       userData.tankData = {};
-      resp.data[defaultAccount].forEach((tankStats) => {
+      resp.data[accountId].forEach((tankStats) => {
         userData.tankData[tankStats.tank_id] = Object.assign({}, tankStats);
       });
       console.log('userData', userData);
@@ -42,13 +50,12 @@ $(document).ready(function() {
         JSON.parse(resp.wn8).data.forEach((tankWN8) => {
           tanksWN8[tankWN8.IDNum] = Object.assign({}, tankWN8);
         });
-        console.log('wn8', tanksWN8);
         fillAccountData(userData);
         buildNationTrees(tankData);
       });
     });
   });
-});
+}
 
 /**
  * Fill html with data from WG api
@@ -70,9 +77,9 @@ function fillAccountData(data) {
   $('#total_battles').addClass(getColor('battles', battles)).html(battles);
   $('#average_exp').addClass(getColor('exp', averageExp)).html(averageExp.toFixed(2));
   $('#average_dmg').addClass(getColor('dmg', averageDmg)).html(averageDmg.toFixed(2));
-  $('#armor_link').html(`<a href="http://armor.kiev.ua/wot/gamerstat/${data.nickname}">${data.nickname}</a>`);
   $('#noobmeter_link').html(`<a href="http://www.noobmeter.com/player/ru/${data.nickname.toLowerCase()}/${data.account_id}/">Noobmeter</a>`);
   $('#wots_link').html(`<a href="http://wots.com.ua/user/stats/${data.nickname.toLowerCase()}">WOTS</a>`);
+  $('#kttc_link').html(`<a href="https://kttc.ru/wot/ru/user/${data.nickname.toLowerCase()}/">KTTC</a>`);
   // подсчёт WN8
   // считаем средний уровень
   let btl = 0,
@@ -101,14 +108,8 @@ function fillAccountData(data) {
     }
   });
 
-  var rWin  = Math.max(((winrate * eb / ewin - 0.71) / (1 - 0.71)), 0);
-  var rDmg  = Math.max(((averageDmg * eb / edmg - 0.22) / (1 - 0.22)), 0);
-  var rFrag = Math.max(Math.min(rDmg + 0.2,(( averageFrags * eb / efrg - 0.12) / (1 - 0.12))), 0);
-  var rSpot = Math.max(Math.min(rDmg + 0.1,(( averageSpotted * eb / espo - 0.38) / (1 - 0.38))), 0);
-  var rDef  = Math.max(Math.min(rDmg + 0.1,(( averageDef * eb / edef - 0.10) / (1 - 0.10))), 0);
-
-  const wn8  = 980 * rDmg + 210 * rDmg * rFrag + 155 * rFrag * rSpot + 75 * rDef * rFrag + 145 * Math.min(1.8, rWin);
-  $('#personal_wn8').addClass(getColor('wn8', wn8)).html(wn8.toFixed(0));
+  const wn8  = calcWN8(averageDmg * eb, edmg, averageFrags * eb, efrg, averageSpotted * eb, espo, averageDef * eb, edef, winrate * eb, ewin);
+  $('#personal_wn8').addClass(getColor('wn8', wn8)).html(wn8);
 }
 
 /**
@@ -127,14 +128,15 @@ function buildNationTrees(tankData) {
       tankDiv += '<span class="golden"><img src="../images/gold.png" title="750" width="12" height="12" /></span>';
     }
     if (userTankData) {
-      const { mark_of_mastery, all } = userTankData;
+      const { mark_of_mastery, all } = userTankData,
+            { wins, battles, damage_dealt, frags, spotted, dropped_capture_points } = all,
+            { expDamage, expFrag, expSpot, expDef, expWinRate } = tanksWN8[tank.id],
+            tankWinrate = wins / battles * 100,
+            tankWN8 = calcWN8(damage_dealt / battles, expDamage, frags / battles, expFrag, spotted / battles, expSpot, dropped_capture_points / battles, expDef, tankWinrate, expWinRate);
       if (mark_of_mastery > 0) {
         tankDiv += `<span class="mastery"><img src="../images/class${mark_of_mastery}.png" alt=""></span>`;
       }
-      const tankWinrate = all.wins / all.battles * 100;
-      tankDiv += `<div class="gamerbattles">боёв <span class="ratings ${getColor('winrate', tankWinrate)}">${all.battles} (${tankWinrate.toFixed(0)}%)</span>`;
-      const tankWN8 = calcTankWN8(tank.id, tankWinrate, all);
-      tankDiv += ` wn8 <span class="ratings ${getColor('wn8', tankWN8)}">${tankWN8}</span></div>`;
+      tankDiv += `<div class="gamerbattles">боёв <span class="ratings ${getColor('winrate', tankWinrate)}">${battles}(${tankWinrate.toFixed(0)}%)</span> wn8 <span class="ratings ${getColor('wn8', tankWN8)}">${tankWN8}</span></div>`;
     } else {
       tankDiv += '<span style="position: absolute; width: 100%; height: 100%; top: 0px; background-color: rgba(0, 0, 0, 0.5);"></span>';
     }
@@ -147,27 +149,27 @@ function buildNationTrees(tankData) {
 }
 
 /**
- * Get specific tank WN8 rating
- * @param id {int} tank ID
- * @param avgWinRate {float} calculated winrate
- * @param data {object} tank battles statistics
- * @returns {number}
+ * Get WN8 rating for user data
+ * @param damage
+ * @param expDamage
+ * @param frags
+ * @param expFrags
+ * @param spotted
+ * @param expSpotted
+ * @param def
+ * @param expDef
+ * @param winrate
+ * @param expWinrate
+ * @returns {int} WN8 value
  */
-function calcTankWN8(id, avgWinRate, data) {
-  const rDAMAGE = (data.damage_dealt / data.battles) / tanksWN8[id].expDamage;
-  const rSPOT = (data.spotted / data.battles) / tanksWN8[id].expSpot;
-  const rFRAG = (data.frags / data.battles) / tanksWN8[id].expFrag;
-  const rDEF = (data.dropped_capture_points / data.battles) / tanksWN8[id].expDef;
-  const rWIN = avgWinRate / tanksWN8[id].expWinRate;
-  // Нормализованное значение =  max(нижняя граница, (взвешенное соотношение – константа ) / (1 – константа))
-  const rWINc = Math.max(0, (rWIN - 0.71) / (1 - 0.71));
-  const rDAMAGEc= Math.max(0, (rDAMAGE - 0.22) / (1 - 0.22));
-  // Нормализованное значение = min(верхняя граница, max(нижняя граница, (взвешенное соотношение – константа ) / (1 – константа)))
-  const rFRAGc = Math.min(rDAMAGEc + 0.2, Math.max(0, (rFRAG - 0.12) / (1 - 0.12)));
-  const rSPOTc = Math.min(rDAMAGEc + 0.1,  Math.max(0, (rSPOT - 0.38) / (1 - 0.38)));
-  const rDEFc = Math.min(rDAMAGEc + 0.1, Math.max(0, (rDEF - 0.10) / (1 - 0.10)));
+function calcWN8(damage, expDamage, frags, expFrags, spotted, expSpotted, def, expDef, winrate, expWinrate) {
+  const rDmg  = Math.max(((damage / expDamage - 0.22) / (1 - 0.22)), 0);
+  const rFrag = Math.max(Math.min(rDmg + 0.2,((frags / expFrags - 0.12) / (1 - 0.12))), 0);
+  const rSpot = Math.max(Math.min(rDmg + 0.1,(( spotted / expSpotted - 0.38) / (1 - 0.38))), 0);
+  const rDef  = Math.max(Math.min(rDmg + 0.1,(( def / expDef - 0.10) / (1 - 0.10))), 0);
+  const rWin  = Math.max((winrate / expWinrate - 0.71) / (1 - 0.71), 0);
 
-  return (980 * rDAMAGEc + 210 * rDAMAGEc * rFRAGc + 155 * rFRAGc * rSPOTc + 75 * rDEFc * rFRAGc + 145 * Math.min(1.8, rWINc)).toFixed(0);
+  return (980 * rDmg + 210 * rDmg * rFrag + 155 * rFrag * rSpot + 75 * rDef * rFrag + 145 * Math.min(1.8, rWin)).toFixed(0);
 }
 
 /**
