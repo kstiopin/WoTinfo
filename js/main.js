@@ -2,11 +2,11 @@ if (localStorage.getItem("defaultAccount") === null) {
   localStorage.setItem('defaultAccount', 20250564);
 }
 const defaultAccount = localStorage.getItem('defaultAccount'),
-      applicationId = '?application_id=f3e7f06d42e6f54f1d63ed6e7734848b',
-      tanksWN8 = {};
-var userData = false,
-    tankData = false,
-    activeTab = 'main';
+      applicationId  = '?application_id=f3e7f06d42e6f54f1d63ed6e7734848b',
+      tanksWN8       = {};
+var userData     = false,
+    tankData     = false,
+    activeTab    = 'main';
 
 $(document).ready(function() {
   // bind tabs
@@ -35,6 +35,7 @@ $(document).ready(function() {
  * @param accountId {int}
  */
 function getUser(accountId) {
+  $('#other_requests').hide();
   // Get userData
   $.get(`https://api.worldoftanks.ru/wot/account/info/${applicationId}&account_id=${accountId}`, function(resp) {
     userData = resp.data[accountId];
@@ -62,7 +63,7 @@ function getUser(accountId) {
  * @param data {object}
  */
 function fillAccountData(data) {
-  const { statistics, tankData } = data,
+  const { statistics, tankData, account_id, nickname, global_rating } = data,
         { battles, wins, xp, damage_dealt, frags, spotted, dropped_capture_points } = statistics.all,
         winrate = wins / battles * 100,
         averageExp = xp / battles,
@@ -70,16 +71,16 @@ function fillAccountData(data) {
         averageFrags = frags / battles,
         averageSpotted = spotted / battles,
         averageDef = dropped_capture_points / battles;
-  $('#js-profile-name').html(`<a href="http://worldoftanks.ru/community/accounts/${data.account_id}-${data.nickname}/">${data.nickname}</a>`);
+  $('#js-profile-name').html(`<a href="http://worldoftanks.ru/community/accounts/${account_id}-${nickname}/">${nickname}</a>`);
   $('#acc_input').val(data.account_id);
-  $('#personal_rating').addClass(getColor('wg', data.global_rating)).html(data.global_rating);
-  $('#winrate').addClass(getColor('winrate', winrate)).html(`${(winrate).toFixed(2)}%`);
-  $('#total_battles').addClass(getColor('battles', battles)).html(battles);
-  $('#average_exp').addClass(getColor('exp', averageExp)).html(averageExp.toFixed(2));
-  $('#average_dmg').addClass(getColor('dmg', averageDmg)).html(averageDmg.toFixed(2));
-  $('#noobmeter_link').html(`<a href="http://www.noobmeter.com/player/ru/${data.nickname.toLowerCase()}/${data.account_id}/">Noobmeter</a>`);
-  $('#wots_link').html(`<a href="http://wots.com.ua/user/stats/${data.nickname.toLowerCase()}">WOTS</a>`);
-  $('#kttc_link').html(`<a href="https://kttc.ru/wot/ru/user/${data.nickname.toLowerCase()}/">KTTC</a>`);
+  $('#personal_rating').removeClass('red orange green teal violet').addClass(getColor('wg', global_rating)).html(global_rating);
+  $('#winrate').removeClass('red orange green teal violet').addClass(getColor('winrate', winrate)).html(`${(winrate).toFixed(2)}%`);
+  $('#total_battles').removeClass('red orange green teal violet').addClass(getColor('battles', battles)).html(battles);
+  $('#average_exp').removeClass('red orange green teal violet').addClass(getColor('exp', averageExp)).html(averageExp.toFixed(2));
+  $('#average_dmg').removeClass('red orange green teal violet').addClass(getColor('dmg', averageDmg)).html(averageDmg.toFixed(2));
+  $('#noobmeter_link').html(`<a href="http://www.noobmeter.com/player/ru/${nickname.toLowerCase()}/${account_id}/">Noobmeter</a>`);
+  $('#wots_link').html(`<a href="http://wots.com.ua/user/stats/${nickname.toLowerCase()}">WOTS</a>`);
+  $('#kttc_link').html(`<a href="https://kttc.ru/wot/ru/user/${nickname.toLowerCase()}/">KTTC</a>`);
   // подсчёт WN8
   // считаем средний уровень
   let btl = 0,
@@ -109,7 +110,10 @@ function fillAccountData(data) {
   });
 
   const wn8  = calcWN8(averageDmg * eb, edmg, averageFrags * eb, efrg, averageSpotted * eb, espo, averageDef * eb, edef, winrate * eb, ewin);
-  $('#personal_wn8').addClass(getColor('wn8', wn8)).html(wn8);
+  $('#personal_wn8').removeClass('red orange green teal violet').addClass(getColor('wn8', wn8)).html(wn8);
+  $.post('../ajax/accounts.php', { account_id, nickname, battles, winrate, wg: global_rating, wn8 }, function(resp) {
+    console.log(`account ${data.account_id} updated`, resp);
+  });
 }
 
 /**
@@ -117,10 +121,10 @@ function fillAccountData(data) {
  * @param tankData {array}
  */
 function buildNationTrees(tankData) {
+  $('.tree').html('');
   tankData.forEach((tank) => {
     const userTankData = userData.tankData[tank.id];
-    let tankDiv = `<div class="tblock column${tank.level} row${tank.row}">`;
-    tankDiv += `<div class="vicLogo"><img src="${tank.image_small}" /></div>`;
+    let tankDiv = `<div class="vicLogo"><img src="${tank.image_small}" /></div>`;
     tankDiv += `<span class="mark" title="${tank.name}">${tank.short_name}</span>`;
     tankDiv += `<span class="level">${tank.level}</span>`;
     tankDiv += `<span class="class">${getTankTypeImg(tank.type)}</span>`;
@@ -130,21 +134,43 @@ function buildNationTrees(tankData) {
     if (userTankData) {
       const { mark_of_mastery, all } = userTankData,
             { wins, battles, damage_dealt, frags, spotted, dropped_capture_points } = all,
-            { expDamage, expFrag, expSpot, expDef, expWinRate } = tanksWN8[tank.id],
-            tankWinrate = wins / battles * 100,
-            tankWN8 = calcWN8(damage_dealt / battles, expDamage, frags / battles, expFrag, spotted / battles, expSpot, dropped_capture_points / battles, expDef, tankWinrate, expWinRate);
+            tankWinrate = wins / battles * 100;
       if (mark_of_mastery > 0) {
         tankDiv += `<span class="mastery"><img src="../images/class${mark_of_mastery}.png" alt=""></span>`;
       }
-      tankDiv += `<div class="gamerbattles">боёв <span class="ratings ${getColor('winrate', tankWinrate)}">${battles}(${tankWinrate.toFixed(0)}%)</span> wn8 <span class="ratings ${getColor('wn8', tankWN8)}">${tankWN8}</span></div>`;
+      tankDiv += `<div class="gamerbattles">боёв <span class="ratings ${getColor('winrate', tankWinrate)}">${battles}(${tankWinrate.toFixed(0)}%)</span>`;
+      if (tanksWN8[tank.id]) {
+        const { expDamage, expFrag, expSpot, expDef, expWinRate } = tanksWN8[tank.id],
+              tankWN8 = calcWN8(damage_dealt / battles, expDamage, frags / battles, expFrag, spotted / battles, expSpot, dropped_capture_points / battles, expDef, tankWinrate, expWinRate);
+        tankDiv += ` wn8 <span class="ratings ${getColor('wn8', tankWN8)}">${tankWN8}</span>`;
+      }
+      tankDiv += '</div>';
     } else {
       tankDiv += '<span style="position: absolute; width: 100%; height: 100%; top: 0px; background-color: rgba(0, 0, 0, 0.5);"></span>';
     }
     if (tank.relations) {
       tankDiv += tank.relations;
     }
-    tankDiv += '</div>';
-    $(`#tree-${tank.nation}`).append(tankDiv);
+    $(`#tree-${tank.nation}`).append(`<div class="tblock column${tank.level} row${tank.row}">${tankDiv}</div>`);
+  });
+  $('#other_requests').show();
+}
+
+/**
+ * Get saved accounts from DB
+ */
+function showAccountHistory() {
+  $.get('../ajax/accounts.php', function(accounts) {
+    Object.keys(accounts).forEach((account_id) => {
+      const { nickname, battles, winrate, wg, wn8 } = accounts[account_id];
+      let tr = `<td><span onclick="getUser(${account_id})">${nickname}</span></td>`;
+      tr += `<td class="${getColor('battles',battles)}">${battles}</td>`;
+      tr += `<td class="${getColor('winrate', winrate)}">${winrate}</td>`;
+      tr += `<td class="${getColor('wg', wg)}">${wg}</td>`;
+      tr += `<td class="${getColor('wn8', wn8)}">${wn8}</td>`;
+      $('#other_requests > table > tbody').append(`<tr>${tr}</tr>`);
+    });
+    $('#other_requests > table').toggle();
   });
 }
 

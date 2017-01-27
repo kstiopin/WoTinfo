@@ -6,7 +6,6 @@
     <title>WoT info</title>
     <link rel="stylesheet" type="text/css" href="../style/style.css" media="screen"/>
     <link rel="stylesheet" type="text/css" href="../style/main.css" media="screen"/>
-    <link rel="stylesheet" type="text/css" href="../style/private.css" media="screen"/>
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script type="text/javascript" src="../js/main.js"></script>
 </head>
@@ -33,11 +32,10 @@
                     <a href="http://worldoftanks.ru/" target="_blank">сайт WoT</a>,&nbsp;
                     <a href="http://knowly.ru/asja" target="_blank">Ася шарит</a>,&nbsp;
                     <a href="http://vk.com/wotleaks" target="_blank">Wot leaks</a>
-
-                    <form action="" method="post" id="update_stats">
+                    <div id="update_stats">
                         <input type="text" id="acc_input" value="" name="acc"/>
-                        <input type="submit" class="button red" value="Обновить статистику"/>
-                    </form>
+                        <input type="button" class="button red" value="Обновить статистику" onclick="getUser($('#acc_input').val());"/>
+                    </div>
                 </div>
 
                 <div class="b-userblock-wrpr">
@@ -73,6 +71,21 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <div id="other_requests">
+                <span onclick="showAccountHistory();">Show other requested accounts</span>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Battles</th>
+                            <th>WR</th>
+                            <th>WG</th>
+                            <th>WN8</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
         </div>
         <div class="clear"></div>
