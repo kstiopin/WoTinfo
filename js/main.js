@@ -56,6 +56,7 @@ function getUser(accountId) {
       });
     });
   });
+  localStorage.setItem('defaultAccount', accountId);
 }
 
 /**
@@ -161,6 +162,8 @@ function buildNationTrees(tankData) {
  */
 function showAccountHistory() {
   $.get('../ajax/accounts.php', function(accounts) {
+    $('#other_requests > table > tbody').html('');
+    // TODO: create object for accounts, handle sorting and then depending on it should in correct order
     Object.keys(accounts).forEach((account_id) => {
       const { nickname, battles, winrate, wg, wn8 } = accounts[account_id];
       let tr = `<td><span onclick="getUser(${account_id})">${nickname}</span></td>`;
