@@ -5,6 +5,7 @@ const defaultAccount = localStorage.getItem('defaultAccount'),
       applicationId  = '?application_id=f3e7f06d42e6f54f1d63ed6e7734848b',
       tanksWN8       = {};
 var userData     = false,
+    accountsData = [],
     tankData     = false,
     activeTab    = 'main';
 
@@ -123,36 +124,49 @@ function fillAccountData(data) {
  */
 function buildNationTrees(tankData) {
   $('.tree').html('');
+  const lastExtraRow = {};
   tankData.forEach((tank) => {
-    const userTankData = userData.tankData[tank.id];
-    let tankDiv = `<div class="vicLogo"><img src="${tank.image_small}" /></div>`;
-    tankDiv += `<span class="mark" title="${tank.name}">${tank.short_name}</span>`;
-    tankDiv += `<span class="level">${tank.level}</span>`;
-    tankDiv += `<span class="class">${getTankTypeImg(tank.type)}</span>`;
-    if (tank.is_premium == 1) {
-      tankDiv += '<span class="golden"><img src="../images/gold.png" title="750" width="12" height="12" /></span>';
-    }
-    if (userTankData) {
-      const { mark_of_mastery, all } = userTankData,
-            { wins, battles, damage_dealt, frags, spotted, dropped_capture_points } = all,
-            tankWinrate = wins / battles * 100;
-      if (mark_of_mastery > 0) {
-        tankDiv += `<span class="mastery"><img src="../images/class${mark_of_mastery}.png" alt=""></span>`;
+    const { id, row, image_small, name, short_name, level, type, is_premium, nation, relations } = tank,
+          userTankData = userData.tankData[id];
+    if ((row < 12) || userTankData) {
+      let tankRow = row;
+      if (row > 11) {
+        if (lastExtraRow[`${nation}${level}`]) {
+          lastExtraRow[`${nation}${level}`]++;
+        } else {
+          lastExtraRow[`${nation}${level}`] = 12;
+        }
+        tankRow = lastExtraRow[`${nation}${level}`];
       }
-      tankDiv += `<div class="gamerbattles">боёв <span class="ratings ${getColor('winrate', tankWinrate)}">${battles}(${tankWinrate.toFixed(0)}%)</span>`;
-      if (tanksWN8[tank.id]) {
-        const { expDamage, expFrag, expSpot, expDef, expWinRate } = tanksWN8[tank.id],
-              tankWN8 = calcWN8(damage_dealt / battles, expDamage, frags / battles, expFrag, spotted / battles, expSpot, dropped_capture_points / battles, expDef, tankWinrate, expWinRate);
-        tankDiv += ` wn8 <span class="ratings ${getColor('wn8', tankWN8)}">${tankWN8}</span>`;
+      let tankDiv = `<div class="vicLogo"><img src="${image_small}" /></div>`;
+      tankDiv += `<span class="mark" title="${name}">${(short_name.length < name.length) ? short_name : name}</span>`;
+      tankDiv += `<span class="level">${level}</span>`;
+      tankDiv += `<span class="class">${getTankTypeImg(type)}</span>`;
+      if (is_premium == 1) {
+        tankDiv += '<span class="golden"><img src="../images/gold.png" title="750" width="12" height="12" /></span>';
       }
-      tankDiv += '</div>';
-    } else {
-      tankDiv += '<span style="position: absolute; width: 100%; height: 100%; top: 0px; background-color: rgba(0, 0, 0, 0.5);"></span>';
+      if (userTankData) {
+        const { mark_of_mastery, all } = userTankData,
+              { wins, battles, damage_dealt, frags, spotted, dropped_capture_points } = all,
+              tankWinrate = wins / battles * 100;
+        if (mark_of_mastery > 0) {
+          tankDiv += `<span class="mastery"><img src="../images/class${mark_of_mastery}.png" alt=""></span>`;
+        }
+        tankDiv += `<div class="gamerbattles">боёв <span class="ratings ${getColor('winrate', tankWinrate)}">${battles}(${tankWinrate.toFixed(0)}%)</span>`;
+        if (tanksWN8[tank.id]) {
+          const { expDamage, expFrag, expSpot, expDef, expWinRate } = tanksWN8[tank.id],
+                tankWN8 = calcWN8(damage_dealt / battles, expDamage, frags / battles, expFrag, spotted / battles, expSpot, dropped_capture_points / battles, expDef, tankWinrate, expWinRate);
+          tankDiv += ` wn8 <span class="ratings ${getColor('wn8', tankWN8)}">${tankWN8}</span>`;
+        }
+        tankDiv += '</div>';
+      } else {
+        tankDiv += '<span style="position: absolute; width: 100%; height: 100%; top: 0px; background-color: rgba(0, 0, 0, 0.5);"></span>';
+      }
+      if (relations) {
+        tankDiv += relations;
+      }
+      $(`#tree-${nation}`).append(`<div class="tblock column${level} row${tankRow}">${tankDiv}</div>`);
     }
-    if (tank.relations) {
-      tankDiv += tank.relations;
-    }
-    $(`#tree-${tank.nation}`).append(`<div class="tblock column${tank.level} row${tank.row}">${tankDiv}</div>`);
   });
   $('#other_requests').show();
 }
@@ -160,10 +174,10 @@ function buildNationTrees(tankData) {
 /**
  * Get saved accounts from DB
  */
-function showAccountHistory() {
+function showAccounts() {
+  // TODO: remove excess calls to BE
   $.get('../ajax/accounts.php', function(accounts) {
-    $('#other_requests > table > tbody').html('');
-    // TODO: create object for accounts, handle sorting and then depending on it should in correct order
+    accountsData = [];
     Object.keys(accounts).forEach((account_id) => {
       const { nickname, battles, winrate, wg, wn8 } = accounts[account_id];
       let tr = `<td><span onclick="getUser(${account_id})">${nickname}</span></td>`;
@@ -171,8 +185,18 @@ function showAccountHistory() {
       tr += `<td class="${getColor('winrate', winrate)}">${winrate}</td>`;
       tr += `<td class="${getColor('wg', wg)}">${wg}</td>`;
       tr += `<td class="${getColor('wn8', wn8)}">${wn8}</td>`;
-      $('#other_requests > table > tbody').append(`<tr>${tr}</tr>`);
+      accountsData.push(Object.assign({}, accounts[account_id], { tr }));
     });
+    accountsData.sort(function(a, b) {
+      const aWN8 = a.wn8 * 1,
+            bWN8 = b.wn8 * 1;
+      return (aWN8 < bWN8) ? 1 : ((aWN8 > bWN8) ? -1 : 0);
+    });
+    console.log('accountsData', accountsData);
+    $('#other_requests > table > tbody').html('');
+    accountsData.forEach((account) => {
+      $('#other_requests > table > tbody').append(`<tr>${account.tr}</tr>`);
+    })
     $('#other_requests > table').toggle();
   });
 }
