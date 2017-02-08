@@ -49,9 +49,11 @@ function getUser(accountId) {
       // Get tanks data for trees and wn8 rating from http://stat.modxvm.com/wn8.json
       $.get('../ajax/tanks.php', function(resp) {
         tankData = resp.tanks;
-        JSON.parse(resp.wn8).data.forEach((tankWN8) => {
-          tanksWN8[tankWN8.IDNum] = Object.assign({}, tankWN8);
-        });
+        if (resp.wn8) {
+          JSON.parse(resp.wn8).data.forEach((tankWN8) => {
+            tanksWN8[tankWN8.IDNum] = Object.assign({}, tankWN8);
+          });
+        }
         fillAccountData(userData);
         buildNationTrees(tankData);
       });
@@ -155,8 +157,10 @@ function buildNationTrees(tankData) {
         tankDiv += `<div class="gamerbattles">боёв <span class="ratings ${getColor('winrate', tankWinrate)}">${battles}(${tankWinrate.toFixed(0)}%)</span>`;
         if (tanksWN8[tank.id]) {
           const { expDamage, expFrag, expSpot, expDef, expWinRate } = tanksWN8[tank.id],
-                tankWN8 = calcWN8(damage_dealt / battles, expDamage, frags / battles, expFrag, spotted / battles, expSpot, dropped_capture_points / battles, expDef, tankWinrate, expWinRate);
+                avgDmg = damage_dealt / battles,
+                tankWN8 = calcWN8(avgDmg, expDamage, frags / battles, expFrag, spotted / battles, expSpot, dropped_capture_points / battles, expDef, tankWinrate, expWinRate);
           tankDiv += ` wn8 <span class="ratings ${getColor('wn8', tankWN8)}">${tankWN8}</span>`;
+          tankDiv += ` dmg <span class="ratings ${getColor('tankDmg', avgDmg / expDamage)}" title="Expected: ${expDamage.toFixed(0)}">${avgDmg.toFixed(0)}</span>`;
         }
         tankDiv += '</div>';
       } else {
@@ -239,7 +243,8 @@ function getColor(type, value) {
     winrate: [65, 58, 53, 49],
     battles: [20000, 14000, 9000, 5000],
     exp: [1200, 1100, 800, 600],
-    dmg: [2500, 1800, 1000, 750]
+    dmg: [2500, 1800, 1000, 750],
+    tankDmg: [1.8, 1.5, 1, 0.6],
   };
   if (value >= types[type][0]) {
     color = 'violet';
