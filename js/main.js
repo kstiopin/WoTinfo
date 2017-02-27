@@ -128,9 +128,10 @@ function buildNationTrees(tankData) {
   $('.tree').html('');
   const lastExtraRow = {};
   tankData.forEach((tank) => {
+    // console.log(tank);
     const { id, row, image_small, name, short_name, level, type, is_premium, nation, relations } = tank,
           userTankData = userData.tankData[id];
-    if ((row < 12) || userTankData) {
+    if ((row < 12) || (userTankData && (userTankData.all.battles > 0))) {
       let tankRow = row;
       if (row > 11) {
         if (lastExtraRow[`${nation}${level}`]) {
@@ -147,7 +148,7 @@ function buildNationTrees(tankData) {
       if (is_premium == 1) {
         tankDiv += '<span class="golden"><img src="../images/gold.png" title="750" width="12" height="12" /></span>';
       }
-      if (userTankData) {
+      if (userTankData && (userTankData.all.battles > 0)) {
         const { mark_of_mastery, all } = userTankData,
               { wins, battles, damage_dealt, frags, spotted, dropped_capture_points } = all,
               tankWinrate = wins / battles * 100;
@@ -169,7 +170,7 @@ function buildNationTrees(tankData) {
       if (relations) {
         tankDiv += relations;
       }
-      $(`#tree-${nation}`).append(`<div class="tblock column${level} row${tankRow}">${tankDiv}</div>`);
+      $(`#tree-${nation}`).append(`<div class="tblock column${level} row${tankRow}" id="tank${tank.id}">${tankDiv}</div>`);
     }
   });
   $('#other_requests').show();
