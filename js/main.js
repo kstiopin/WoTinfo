@@ -127,6 +127,7 @@ function fillAccountData(data) {
 function buildNationTrees(tankData) {
   $('.tree').html('');
   const lastExtraRow = {};
+  const addedUserTanks = [];
   tankData.forEach((tank) => {
     // console.log(tank);
     const { id, row, image_small, name, short_name, level, type, is_premium, nation, relations } = tank,
@@ -142,13 +143,14 @@ function buildNationTrees(tankData) {
         tankRow = lastExtraRow[`${nation}${level}`];
       }
       let tankDiv = `<div class="vicLogo"><img src="${image_small}" /></div>`;
-      tankDiv += `<span class="mark" title="${name}">${(short_name.length < name.length) ? short_name : name}</span>`;
+      tankDiv += `<span class="mark" title="${name}">${(short_name.length <= name.length) ? short_name : name}</span>`;
       tankDiv += `<span class="level">${level}</span>`;
       tankDiv += `<span class="class">${getTankTypeImg(type)}</span>`;
       if (is_premium == 1) {
         tankDiv += '<span class="golden"><img src="../images/gold.png" title="750" width="12" height="12" /></span>';
       }
       if (userTankData && (userTankData.all.battles > 0)) {
+        addedUserTanks.push(tank.id);
         const { mark_of_mastery, all } = userTankData,
               { wins, battles, damage_dealt, frags, spotted, dropped_capture_points } = all,
               tankWinrate = wins / battles * 100;
@@ -174,6 +176,19 @@ function buildNationTrees(tankData) {
     }
   });
   $('#other_requests').show();
+  Object.keys(userData.tankData).forEach((tankId) => {
+    if (addedUserTanks.indexOf(tankId) === -1) {
+      if (userData.tankData[tankId].all.battles > 0) {
+        $.get(`https://api.worldoftanks.ru/wot/encyclopedia/tankinfo/${applicationId}&tank_id=${tankId}`, function (resp) {
+          if (resp.data.hasOwnProperty(tankId) && resp.data[tankId]) {
+            console.log(`${tankId}[${resp.data[tankId].localized_name}] is missing in the DB`, { userTankData: userData.tankData[tankId], tankData: resp });
+          } else {
+            console.log(`${tankId} is missing, battles ${userData.tankData[tankId].all.battles}`, { userTankData: userData.tankData[tankId], tankData: resp });
+          }
+        });
+      }
+    }
+  });
 }
 
 /**
