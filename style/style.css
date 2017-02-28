@@ -240,9 +240,12 @@ li.active {
 }
 .mastery {right:0; top: -12px;}
 .pointer { cursor: pointer; margin-left: 20px; }
-.wishlist { border: 1px solid green; }
-.wishlist > a > span.mark { color: red!important; }
-.wishlist > a > span.mark.in_angar, span.in_angar { color: green!important; }
+.in_angar {
+    border: 1px solid green;
+}
+.in_angar > span.mark {
+    color: green!important;
+}
 /*div.in_angar { border: 1px solid yellow; }*/
 #hangar { z-index: 100; }
 .vicLogo img { max-height: 31px!important; }

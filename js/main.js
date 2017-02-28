@@ -1,8 +1,10 @@
 if (localStorage.getItem("defaultAccount") === null) {
   localStorage.setItem('defaultAccount', 20250564);
 }
-const defaultAccount = localStorage.getItem('defaultAccount'),
+const accountId      = getUrlParameter('account_id') ? getUrlParameter('account_id') : localStorage.getItem('defaultAccount'),
+      apiUrl         = 'https://api.worldoftanks.ru/wot/',
       applicationId  = '?application_id=f3e7f06d42e6f54f1d63ed6e7734848b',
+      accessToken    = getUrlParameter('access_token') ? `&access_token=${getUrlParameter('access_token')}` : '',
       tanksWN8       = {};
 var userData     = false,
     accountsData = [],
@@ -10,6 +12,8 @@ var userData     = false,
     activeTab    = 'main';
 
 $(document).ready(function() {
+  $('#authorize').prop('href', `${apiUrl}auth/login/${applicationId}&redirect_uri=http://wot.kstiopin.in.ua/`);
+
   // bind tabs
   $('#nations li').click(function() {
     const id = $(this).data("id");
@@ -28,7 +32,7 @@ $(document).ready(function() {
     $(`#${activeTab}`).show();
   });
 
-  getUser(defaultAccount);
+  getUser(accountId);
 });
 
 /**
@@ -38,16 +42,16 @@ $(document).ready(function() {
 function getUser(accountId) {
   $('#other_requests').hide();
   // Get userData
-  $.get(`https://api.worldoftanks.ru/wot/account/info/${applicationId}&account_id=${accountId}`, function(resp) {
+  $.get(`${apiUrl}account/info/${applicationId}&account_id=${accountId}${accessToken}`, function(resp) {
     userData = resp.data[accountId];
-    $.get(`https://api.worldoftanks.ru/wot/tanks/stats/${applicationId}&account_id=${accountId}`, function(resp) {
+    $.get(`${apiUrl}tanks/stats/${applicationId}&account_id=${accountId}${accessToken}`, function(resp) {
       userData.tankData = {};
       resp.data[accountId].forEach((tankStats) => {
         userData.tankData[tankStats.tank_id] = Object.assign({}, tankStats);
       });
-      console.log('userData', userData);
+      console.log(`getUser(${accountId}) userData`, userData);
       // Get tanks data for trees and wn8 rating from http://stat.modxvm.com/wn8.json
-      $.get('../ajax/tanks.php', function(resp) {
+      $.get(`../ajax/tanks.php?account_id=${accountId}`, function(resp) {
         tankData = resp.tanks;
         if (resp.wn8) {
           JSON.parse(resp.wn8).data.forEach((tankWN8) => {
@@ -74,7 +78,8 @@ function fillAccountData(data) {
         averageDmg = damage_dealt / battles,
         averageFrags = frags / battles,
         averageSpotted = spotted / battles,
-        averageDef = dropped_capture_points / battles;
+        averageDef = dropped_capture_points / battles,
+        angar = [];
   $('#js-profile-name').html(`<a href="http://worldoftanks.ru/community/accounts/${account_id}-${nickname}/">${nickname}</a>`);
   $('#acc_input').val(data.account_id);
   $('#personal_rating').removeClass('red orange green teal violet').addClass(getColor('wg', global_rating)).html(global_rating);
@@ -103,6 +108,9 @@ function fillAccountData(data) {
       eb   = 0;
   Object.keys(userData.tankData).forEach((tid) => {
     var tb  = userData.tankData[tid].all.battles;
+    if (userData.tankData[tid].in_garage) {
+      angar.push(tid);
+    }
     if (typeof(tanksWN8[tid]) !== "undefined") {
       efrg += tb * tanksWN8[tid].expFrag;
       edmg += tb * tanksWN8[tid].expDamage;
@@ -115,8 +123,8 @@ function fillAccountData(data) {
 
   const wn8  = calcWN8(averageDmg * eb, edmg, averageFrags * eb, efrg, averageSpotted * eb, espo, averageDef * eb, edef, winrate * eb, ewin);
   $('#personal_wn8').removeClass('red orange green teal violet').addClass(getColor('wn8', wn8)).html(wn8);
-  $.post('../ajax/accounts.php', { account_id, nickname, battles, winrate, wg: global_rating, wn8 }, function(resp) {
-    console.log(`account ${data.account_id} updated`, resp);
+  $.post('../ajax/accounts.php', { account_id, nickname, battles, winrate, wg: global_rating, wn8, angar }, function(resp) {
+    console.log(`account ${resp} updated`);
   });
 }
 
@@ -129,11 +137,11 @@ function buildNationTrees(tankData) {
   const lastExtraRow = {};
   const addedUserTanks = [];
   tankData.forEach((tank) => {
-    // console.log(tank);
     const { id, row, image_small, name, short_name, level, type, is_premium, nation, relations } = tank,
           userTankData = userData.tankData[id];
     if ((row < 12) || (userTankData && (userTankData.all.battles > 0))) {
-      let tankRow = row;
+      let tankRow = row,
+          inGarageStyle = '';
       if (row > 11) {
         if (lastExtraRow[`${nation}${level}`]) {
           lastExtraRow[`${nation}${level}`]++;
@@ -151,9 +159,12 @@ function buildNationTrees(tankData) {
       }
       if (userTankData && (userTankData.all.battles > 0)) {
         addedUserTanks.push(tank.id);
-        const { mark_of_mastery, all } = userTankData,
+        const { mark_of_mastery, all, in_garage } = userTankData,
               { wins, battles, damage_dealt, frags, spotted, dropped_capture_points } = all,
               tankWinrate = wins / battles * 100;
+        if (in_garage || ((accessToken === '') && tank.in_angar)) {
+          inGarageStyle = ' in_angar';
+        }
         if (mark_of_mastery > 0) {
           tankDiv += `<span class="mastery"><img src="../images/class${mark_of_mastery}.png" alt=""></span>`;
         }
@@ -172,14 +183,14 @@ function buildNationTrees(tankData) {
       if (relations) {
         tankDiv += relations;
       }
-      $(`#tree-${nation}`).append(`<div class="tblock column${level} row${tankRow}" id="tank${tank.id}">${tankDiv}</div>`);
+      $(`#tree-${nation}`).append(`<div class="tblock column${level} row${tankRow}${inGarageStyle}" id="tank${tank.id}">${tankDiv}</div>`);
     }
   });
   $('#other_requests').show();
   Object.keys(userData.tankData).forEach((tankId) => {
     if (addedUserTanks.indexOf(tankId) === -1) {
       if (userData.tankData[tankId].all.battles > 0) {
-        $.get(`https://api.worldoftanks.ru/wot/encyclopedia/tankinfo/${applicationId}&tank_id=${tankId}`, function (resp) {
+        $.get(`${apiUrl}encyclopedia/tankinfo/${applicationId}&tank_id=${tankId}`, function (resp) {
           if (resp.data.hasOwnProperty(tankId) && resp.data[tankId]) {
             console.log(`${tankId}[${resp.data[tankId].localized_name}] is missing in the DB`, { userTankData: userData.tankData[tankId], tankData: resp });
           } else {
@@ -279,7 +290,7 @@ function getColor(type, value) {
  * Check for new tanks on WG wiki
  */
 function checkNewTanks() {
-  $.get(`https://api.worldoftanks.ru/wot/encyclopedia/tanks/${applicationId}`, function(resp) {
+  $.get(`${apiUrl}encyclopedia/tanks/${applicationId}`, function(resp) {
     console.log('tanks from wiki', resp);
     addNewTanks(resp.data);
   });
@@ -306,4 +317,24 @@ function getTankTypeImg(type) {
   const labels = { lightTank: 'Лёгкий танк', mediumTank: 'Средний танк', heavyTank: 'Тяжёлый танк', 'AT-SPG': 'ПТ САУ', SPG: 'САУ' };
 
   return `<img src="../images/type-${type}.png" align="top" alt="${labels[type]}" title="${labels[type]}" />`;
+}
+
+/**
+ * get params from url
+ * @param sParam
+ * @returns {boolean|string}
+ */
+function getUrlParameter(sParam) {
+  var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+      sURLVariables = sPageURL.split('&'),
+      sParameterName,
+      i;
+
+  for (i = 0; i < sURLVariables.length; i++) {
+    sParameterName = sURLVariables[i].split('=');
+
+    if (sParameterName[0] === sParam) {
+      return (sParameterName[1] === undefined) ? true : sParameterName[1];
+    }
+  }
 }

@@ -20191,3 +20191,7 @@ input[type="file"] {
   cursor: pointer;
   color: #3e6590;
 }
+#authorize {
+  position: absolute;
+  top: 60px;
+}
