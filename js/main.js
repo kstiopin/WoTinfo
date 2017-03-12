@@ -57,6 +57,19 @@ function getUser(accountId) {
           JSON.parse(resp.wn8).data.forEach((tankWN8) => {
             tanksWN8[tankWN8.IDNum] = Object.assign({}, tankWN8);
           });
+          // Add missing wn8 tanks
+          if (!tanksWN8.hasOwnProperty(19473)) { // data for Pz.Kpfw. VII from VK 72.01 K
+            tanksWN8[19473] = tanksWN8[58641];
+          }
+          if (!tanksWN8.hasOwnProperty(48641)) { // data for Защитник from Объект 252У
+            tanksWN8[48641] = tanksWN8[49665];
+          }
+          if (!tanksWN8.hasOwnProperty(19729)) { // data for VK 100.01 (P) from VK 45.02 A
+            tanksWN8[19729] = tanksWN8[10513];
+          }
+          if (!tanksWN8.hasOwnProperty(18705)) { // data for Mäuschen from VK 45.02 B
+            tanksWN8[18705] = tanksWN8[7441];
+          }
         }
         fillAccountData(userData);
         buildNationTrees(tankData);
