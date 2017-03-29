@@ -74,21 +74,16 @@ function getUser(accountId) {
         fillAccountData(userData);
         buildNationTrees(tankData);
         if (resp.angarTanks > 0) {
-          showAngar(resp.angarTanks);
+          $('#angar-tab span').html(resp.angarTanks);
+          $('#angar-tab').removeClass('hidden');
+        } else {
+          $('#angar-tab span').html(0);
+          $('#angar-tab').addClass('hidden');
         }
       });
     });
   });
   localStorage.setItem('defaultAccount', accountId);
-}
-
-/**
- * Show tanks present in user's angar
- * @param tanks {int} count of tanks in angar
- */
-function showAngar(tanks) {
-  $('#angar-tab span').html(tanks);
-  $('#angar-tab').show();
 }
 
 /**
@@ -246,12 +241,13 @@ function showAccounts() {
   $.get('../ajax/accounts.php', function(accounts) {
     accountsData = [];
     Object.keys(accounts).forEach((account_id) => {
-      const { nickname, battles, winrate, wg, wn8 } = accounts[account_id];
+      const { nickname, battles, winrate, wg, wn8, angar } = accounts[account_id];
       let tr = `<td><span onclick="getUser(${account_id})">${nickname}</span></td>`;
       tr += `<td class="${getColor('battles',battles)}">${battles}</td>`;
       tr += `<td class="${getColor('winrate', winrate)}">${winrate}</td>`;
       tr += `<td class="${getColor('wg', wg)}">${wg}</td>`;
       tr += `<td class="${getColor('wn8', wn8)}">${wn8}</td>`;
+      tr += `<td class="green">${angar ? angar.split(',').length : ''}</td>`;
       accountsData.push(Object.assign({}, accounts[account_id], { tr }));
     });
     accountsData.sort(function(a, b) {

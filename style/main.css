@@ -20173,12 +20173,13 @@ input[type="file"] {
   margin-top: 15px;
 }
 #other_requests {
-  padding: 20px;
+  padding: 10px 20px 30px;
 }
 #other_requests > span {
-  font-size: 22px;
+  font-size: 32px;
   font-weight: bolder;
   cursor: pointer;
+  color: #f25322;
 }
 #other_requests > table {
   marign-top: 20px;

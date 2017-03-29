@@ -17,6 +17,9 @@ h2 {text-align: center;}
     padding: 3px 15px;
     font-size: 110%;
 }
+#nations li.hidden {
+    display: none;
+}
 li.active {
     background: #282516;
     background: -moz-linear-gradient(top,  rgb(93,94,57) 0%, rgb(40,37,22) 64%); /* FF3.6+ */
