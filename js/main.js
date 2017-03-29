@@ -37,53 +37,80 @@ $(document).ready(function() {
 
 /**
  * Load data for an account
- * @param accountId {int}
+ * @param accountId {int|string} if not account_id, will try search by name
  */
 function getUser(accountId) {
-  $('#other_requests').hide();
-  // Get userData
-  $.get(`${apiUrl}account/info/${applicationId}&account_id=${accountId}${accessToken}`, function(resp) {
-    userData = resp.data[accountId];
-    $.get(`${apiUrl}tanks/stats/${applicationId}&account_id=${accountId}${accessToken}`, function(resp) {
-      userData.tankData = {};
-      resp.data[accountId].forEach((tankStats) => {
-        userData.tankData[tankStats.tank_id] = Object.assign({}, tankStats);
-      });
-      console.log(`getUser(${accountId}) userData`, userData);
-      // Get tanks data for trees and wn8 rating from http://stat.modxvm.com/wn8.json
-      $.get(`../ajax/tanks.php?account_id=${accountId}`, function(resp) {
-        tankData = resp.tanks;
-        if (resp.wn8) {
-          JSON.parse(resp.wn8).data.forEach((tankWN8) => {
-            tanksWN8[tankWN8.IDNum] = Object.assign({}, tankWN8);
-          });
-          // Add missing wn8 tanks
-          if (!tanksWN8.hasOwnProperty(19473)) { // data for Pz.Kpfw. VII from VK 72.01 K
-            tanksWN8[19473] = tanksWN8[58641];
+  if (/^[0-9]+$/.test(accountId)) {
+    $('#other_requests').hide();
+    // Get userData
+    $.get(`${apiUrl}account/info/${applicationId}&account_id=${accountId}${accessToken}`, function (resp) {
+      userData = resp.data[accountId];
+      $.get(`${apiUrl}tanks/stats/${applicationId}&account_id=${accountId}${accessToken}`, function (resp) {
+        userData.tankData = {};
+        resp.data[accountId].forEach((tankStats) => {
+          userData.tankData[tankStats.tank_id] = Object.assign({}, tankStats);
+        });
+        console.log(`getUser(${accountId}) userData`, userData);
+        // Get tanks data for trees and wn8 rating from http://stat.modxvm.com/wn8.json
+        $.get(`../ajax/tanks.php?account_id=${accountId}`, function (resp) {
+          tankData = resp.tanks;
+          if (resp.wn8) {
+            JSON.parse(resp.wn8).data.forEach((tankWN8) => {
+              tanksWN8[tankWN8.IDNum] = Object.assign({}, tankWN8);
+            });
+            // Add missing wn8 tanks
+            if (!tanksWN8.hasOwnProperty(19473)) { // data for Pz.Kpfw. VII from VK 72.01 K
+              tanksWN8[19473] = tanksWN8[58641];
+            }
+            if (!tanksWN8.hasOwnProperty(48641)) { // data for Защитник from Объект 252У
+              tanksWN8[48641] = tanksWN8[49665];
+            }
+            if (!tanksWN8.hasOwnProperty(19729)) { // data for VK 100.01 (P) from VK 45.02 A
+              tanksWN8[19729] = tanksWN8[10513];
+            }
+            if (!tanksWN8.hasOwnProperty(18705)) { // data for Mäuschen from VK 45.02 B
+              tanksWN8[18705] = tanksWN8[7441];
+            }
           }
-          if (!tanksWN8.hasOwnProperty(48641)) { // data for Защитник from Объект 252У
-            tanksWN8[48641] = tanksWN8[49665];
+          fillAccountData(userData);
+          buildNationTrees(tankData);
+          if (resp.angarTanks > 0) {
+            $('#angar-tab span').html(resp.angarTanks);
+            $('#angar-tab').removeClass('hidden');
+          } else {
+            $('#angar-tab span').html(0);
+            $('#angar-tab').addClass('hidden');
           }
-          if (!tanksWN8.hasOwnProperty(19729)) { // data for VK 100.01 (P) from VK 45.02 A
-            tanksWN8[19729] = tanksWN8[10513];
-          }
-          if (!tanksWN8.hasOwnProperty(18705)) { // data for Mäuschen from VK 45.02 B
-            tanksWN8[18705] = tanksWN8[7441];
-          }
-        }
-        fillAccountData(userData);
-        buildNationTrees(tankData);
-        if (resp.angarTanks > 0) {
-          $('#angar-tab span').html(resp.angarTanks);
-          $('#angar-tab').removeClass('hidden');
-        } else {
-          $('#angar-tab span').html(0);
-          $('#angar-tab').addClass('hidden');
-        }
+        });
       });
     });
+    localStorage.setItem('defaultAccount', accountId);
+  } else {
+    findUser(accountId);
+  }
+}
+
+/**
+ * find user account_id by name
+ * @param accountName {string}
+ */
+function findUser(accountName) {
+  $.get(`${apiUrl}account/list/${applicationId}&search=${accountName}`, function(resp) {
+    if (resp.data.length > 0) {
+      let userIsFound = false;
+      resp.data.forEach((userFound) => {
+        if (userFound.nickname === accountName) {
+          userIsFound = true;
+          getUser(userFound.account_id);
+        }
+      });
+      if (!userIsFound) {
+        alert('No 100% match found! Please try again or contaсt skype: salvation131');
+      }
+    } else {
+      alert('No players found! Please contact skype: salvation131');
+    }
   });
-  localStorage.setItem('defaultAccount', accountId);
 }
 
 /**
@@ -101,7 +128,7 @@ function fillAccountData(data) {
         averageDef = dropped_capture_points / battles,
         angar = [];
   $('#js-profile-name').html(`<a href="http://worldoftanks.ru/community/accounts/${account_id}-${nickname}/">${nickname}</a>`);
-  $('#acc_input').val(data.account_id);
+  // $('#acc_input').val(data.account_id); - теперь поиск работает по имени, а не по account_id
   $('#personal_rating').removeClass('red orange green teal violet').addClass(getColor('wg', global_rating)).html(global_rating);
   $('#winrate').removeClass('red orange green teal violet').addClass(getColor('winrate', winrate)).html(`${(winrate).toFixed(2)}%`);
   $('#total_battles').removeClass('red orange green teal violet').addClass(getColor('battles', battles)).html(battles);
