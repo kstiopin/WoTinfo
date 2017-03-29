@@ -20198,3 +20198,6 @@ input[type="file"] {
 #nations > li {
   cursor: pointer;
 }
+#angar > .tblock > img {
+  display: none;
+}

@@ -14,7 +14,8 @@ if (isset($_POST['account_id'])) {
           '.((count($_POST['angar']) > 0) ? "angar = '".implode(',', $_POST['angar'])."'," : '').'
           updated = NOW() WHERE account_id = ' . $_POST['account_id']) or die(mysql_error());
     } else {
-        $r = mysql_query("INSERT INTO wot_data VALUES (".$_POST['account_id'].", '".$_POST['nickname']."', ".$_POST['battles'].", ".number_format($_POST['winrate'], 2, '.', '').", ".$_POST['wg'].", ".$_POST['wn8'].", NOW(), NULL, NULL)") or die(mysql_error());
+        $values = "(".$_POST['account_id'].", '".$_POST['nickname']."', ".$_POST['battles'].", ".number_format($_POST['winrate'], 2, '.', '').", ".$_POST['wg'].", ".$_POST['wn8'].", NOW(), NULL, NULL)";
+        $r = mysql_query('INSERT INTO wot_data VALUES ' . $values) or die(mysql_error());
     }
 
     die($_POST['account_id']);

@@ -25,7 +25,7 @@ $(document).ready(function() {
       $('.tree_head').hide();
       $('#ntree').hide();
     } else {
-      activeTab = `tree-${id}`;
+      activeTab = (id === 'angar') ? id : `tree-${id}`;
       $('.tree_head').show();
       $('#ntree').show();
     }
@@ -73,10 +73,22 @@ function getUser(accountId) {
         }
         fillAccountData(userData);
         buildNationTrees(tankData);
+        if (resp.angarTanks > 0) {
+          showAngar(resp.angarTanks);
+        }
       });
     });
   });
   localStorage.setItem('defaultAccount', accountId);
+}
+
+/**
+ * Show tanks present in user's angar
+ * @param tanks {int} count of tanks in angar
+ */
+function showAngar(tanks) {
+  $('#angar-tab span').html(tanks);
+  $('#angar-tab').show();
 }
 
 /**
@@ -148,10 +160,12 @@ function fillAccountData(data) {
 function buildNationTrees(tankData) {
   $('.tree').html('');
   const lastExtraRow = {};
+  const lastAngarRow = {};
   const addedUserTanks = [];
   tankData.forEach((tank) => {
     const { id, row, image_small, name, short_name, level, type, is_premium, nation, relations } = tank,
           userTankData = userData.tankData[id];
+    let addToAngar = false;
     if ((row < 12) || (userTankData && (userTankData.all.battles > 0))) {
       let tankRow = row,
           inGarageStyle = '';
@@ -176,6 +190,7 @@ function buildNationTrees(tankData) {
               { wins, battles, damage_dealt, frags, spotted, dropped_capture_points } = all,
               tankWinrate = wins / battles * 100;
         if (in_garage || ((accessToken === '') && tank.in_angar)) {
+          addToAngar = true;
           inGarageStyle = ' in_angar';
         }
         if (mark_of_mastery > 0) {
@@ -197,6 +212,14 @@ function buildNationTrees(tankData) {
         tankDiv += relations;
       }
       $(`#tree-${nation}`).append(`<div class="tblock column${level} row${tankRow}${inGarageStyle}" id="tank${tank.id}">${tankDiv}</div>`);
+      if (addToAngar) {
+        if (lastAngarRow.hasOwnProperty(level)) {
+          lastAngarRow[level]++;
+        } else {
+          lastAngarRow[level] = 1;
+        }
+        $('#angar').append(`<div class="tblock column${level} row${lastAngarRow[level]} in_angar" id="tank${tank.id}">${tankDiv}</div>`);
+      }
     }
   });
   $('#other_requests').show();
