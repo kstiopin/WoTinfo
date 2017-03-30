@@ -6,7 +6,7 @@ require_once '../config/config.php';
 $result = [ tanks => [], wn8 => '' ];
 $r = mysql_query("SELECT * FROM wot_data WHERE account_id = ".$_GET['account_id']) or die(mysql_error());
 $accountData = mysql_fetch_assoc($r);
-$angar = ($accountData['angar'] !== NULL) ? explode(',', $accountData['angar']) : [];
+$angar = (($accountData['angar'] !== NULL) && ($accountData['angar'] !== '')) ? explode(',', $accountData['angar']) : [];
 $result['angarTanks'] = count($angar);
 $r = mysql_query("SELECT * FROM wiki_tanks") or die(mysql_error());
 while ($f = mysql_fetch_assoc($r)) {
