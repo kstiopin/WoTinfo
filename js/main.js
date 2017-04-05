@@ -71,6 +71,9 @@ function getUser(accountId) {
             if (!tanksWN8.hasOwnProperty(18705)) { // data for Mäuschen from VK 45.02 B
               tanksWN8[18705] = tanksWN8[7441];
             }
+            if (!tanksWN8.hasOwnProperty(52097)) { // data for Strv S1 from UDES 03
+              tanksWN8[52097] = tanksWN8[4225];
+            }
           }
           fillAccountData(userData);
           buildNationTrees(tankData);
