@@ -172,7 +172,7 @@ function fillAccountData(data) {
   });
 
   const wn8  = calcWN8(averageDmg * eb, edmg, averageFrags * eb, efrg, averageSpotted * eb, espo, averageDef * eb, edef, winrate * eb, ewin);
-  $('#personal_wn8').removeClass('red orange green teal violet').addClass(getColor('wn8', wn8)).html(wn8);
+  $('#personal_wn8').removeClass('red orange green yellow teal violet').addClass(getColor('wn8', wn8)).html(wn8);
   $.post('../ajax/accounts.php', { account_id, nickname, battles, winrate, wg: global_rating, wn8, angar }, function(resp) {
     console.log(`account ${resp} updated`);
   });
@@ -202,7 +202,7 @@ function buildNationTrees(tankData) {
         }
         tankRow = lastExtraRow[`${nation}${level}`];
       }
-      let tankDiv = `<div class="vicLogo"><img src="${image_small}" /></div>`;
+      let tankDiv = `<div class="vicLogo"><img src="../images/${image_small}" /></div>`;
       tankDiv += `<span class="mark" title="${name}">${(short_name.length <= name.length) ? short_name : name}</span>`;
       tankDiv += `<span class="level">${level}</span>`;
       tankDiv += `<span class="class">${getTankTypeImg(type)}</span>`;
@@ -327,13 +327,13 @@ function calcWN8(damage, expDamage, frags, expFrags, spotted, expSpotted, def, e
 function getColor(type, value) {
   let color = 'red';
   const types = {
-    wn8: [2880, 2180, 1470, 900],
-    wg: [10175, 8730, 6515, 4435],
-    winrate: [65, 58, 53, 49],
-    battles: [20000, 14000, 9000, 5000],
-    exp: [1200, 1100, 800, 600],
-    dmg: [2500, 1800, 1000, 750],
-    tankDmg: [1.8, 1.5, 1, 0.6],
+    wn8: [2880, 2180, 1470, 900, 400],
+    wg: [10175, 8730, 6515, 4435, 3000],
+    winrate: [65, 58, 53, 49, 47],
+    battles: [20000, 14000, 10000, 7000, 4000],
+    exp: [1200, 1100, 800, 600, 450],
+    dmg: [2500, 1800, 1000, 750, 500],
+    tankDmg: [1.8, 1.5, 1, 0.7, 0.5],
   };
   if (value >= types[type][0]) {
     color = 'violet';
@@ -343,6 +343,8 @@ function getColor(type, value) {
     color = 'green';
   } else if (value >= types[type][3]) {
     color = 'yellow';
+  } else if (value >= types[type][4]) {
+    color = 'orange';
   }
 
   return color;
