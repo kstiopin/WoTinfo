@@ -1,0 +1,34 @@
+{
+  "name": "kswot",
+  "version": "1.0.0",
+  "description": "Players wot data",
+  "main": "index.html",
+  "scripts": {
+    "start": "webpack-dev-server --progress --colors",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/Kirill_Stiopin/wotinfo.git"
+  },
+  "keywords": [
+    "wot",
+    "wn8"
+  ],
+  "author": "kstiopin",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/Kirill_Stiopin/wotinfo#readme",
+  "dependencies": {
+    "axios": "^0.16.1",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4"
+  },
+  "devDependencies": {
+    "babel-core": "^6.24.1",
+    "babel-loader": "^7.0.0",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "webpack": "^2.5.0"
+  }
+}

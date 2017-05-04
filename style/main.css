@@ -130,7 +130,7 @@ input:-webkit-autofill {
   left: 50%;
   margin-left: -500px;
   width: 1000px;
-  background: url(http://worldoftanks.ru/static/3.26.0.2/common/css/scss/layout/img/ui-bg-tile.jpg) center 0 repeat-y;
+  background: url('../data/images/ui-bg-tile.jpg') center 0 repeat-y;
 }
 
 .l-body-content {
@@ -178,7 +178,7 @@ input:-webkit-autofill {
 
 .l-container-wrapper {
   min-height: 174px;
-  background: url(http://worldoftanks.ru/static/3.26.0.2/common/css/scss/layout/img/ui-bg-top-corner.jpg) 0 0 no-repeat;
+  background: url('../data/images/ui-bg-top-corner.jpg') 0 0 no-repeat;
   *zoom: 1;
 }
 
@@ -7006,7 +7006,7 @@ h6,.b-header-h6 {
 }
 
 .b-user-block__sparks {
-  background-image: url('../images/sparks.jpg');
+  background-image: url('../data/images/sparks.jpg');
   background-position: 50% 0;
   background-repeat: no-repeat;
 }
@@ -7263,7 +7263,7 @@ h6,.b-header-h6 {
 }
 
 .t-personal-data_ico {
-  background: url('../images/speedometr-param.png') no-repeat 0 0;
+  background: url('../data/images/speedometr-param.png') no-repeat 0 0;
   padding: 82px 8px 3px;
   vertical-align: middle;
 }
@@ -7332,7 +7332,7 @@ h6,.b-header-h6 {
 }
 
 .t-personal-data_pr {
-  background: url('../images/pr.png') no-repeat 50% 0;
+  background: url('../data/images/pr.png') no-repeat 50% 0;
   padding-top: 130px;
   vertical-align: top;
   width: 166px;
@@ -20198,6 +20198,8 @@ input[type="file"] {
 #authorize {
   position: absolute;
   top: 60px;
+  left: 0;
+  white-space: nowrap;
 }
 #nations > li {
   cursor: pointer;

@@ -64,7 +64,7 @@ li.click {
     display: none;
 }
 #main {
-    background-image: url('../images/ui-bg-tile.jpg');
+    background-image: url('../data/images/ui-bg-tile.jpg');
     background-attachment: scroll;
     -webkit-background-size: 100%;
     background-size: 100%;
