@@ -36,26 +36,32 @@ class App extends React.Component {
         const userData = resp.data.data[accountId];
         axios.get(`${apiUrl}tanks/stats/${applicationId}&account_id=${accountId}${accessToken}`).then(resp => {
           userData.tankData = {};
+          let tankData, tanksWN8;
           resp.data.data[accountId].forEach((tankStats) => {
             userData.tankData[tankStats.tank_id] = Object.assign({}, tankStats);
           });
-          console.log(`getAccData(${accountId}) userData`, userData);
-          // Get tanks data for trees and wn8 rating from http://stat.modxvm.com/wn8.json
-          axios.get(`../api/tanks.php?account_id=${accountId}`).then(resp => {
-            const tankData = resp.data.tanks;
-            if (resp.data.wn8) {
-              this.setState({ tanksWN8: setWN8data(JSON.parse(resp.data.wn8).data) });
-            }
-            /* fillAccountData(userData);
-            buildNationTrees(tankData);
-            if (resp.angarTanks > 0) {
-              $('#angar-tab span').html(resp.angarTanks);
-              $('#angar-tab').removeClass('hidden');
-            } else {
-              $('#angar-tab span').html(0);
-              $('#angar-tab').addClass('hidden');
-            } */
-            console.log(userData, tankData, tanksWN8);
+          axios.get(`${apiUrl}tanks/achievements/${applicationId}&account_id=${accountId}${accessToken}`).then(resp => {
+            resp.data[accountId].forEach((tankAchievements) => {
+              userData.tankData[tankAchievements.tank_id].marksOnGun = tankAchievements.achievements.marksOnGun;
+            });
+            console.log(`getAccData(${accountId}) userData`, userData);
+            // Get tanks data for trees and wn8 rating from http://stat.modxvm.com/wn8.json
+            axios.get(`../api/tanks.php?account_id=${accountId}`).then(resp => {
+              tankData = resp.data.tanks;
+              if (resp.data.wn8) {
+                tanksWN8 = setWN8data(JSON.parse(resp.data.wn8).data);
+              }
+              /* fillAccountData(userData);
+              buildNationTrees(tankData);
+              if (resp.angarTanks > 0) {
+                $('#angar-tab span').html(resp.angarTanks);
+                $('#angar-tab').removeClass('hidden');
+              } else {
+                $('#angar-tab span').html(0);
+                $('#angar-tab').addClass('hidden');
+              } */
+              this.setState({ userData, tankData, tanksWN8 });
+            });
           });
         });
       });

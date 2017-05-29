@@ -241,7 +241,29 @@ li.active {
     display: none;
     z-index: 190;
 }
-.mastery {right:0; top: -12px;}
+.mastery {
+    right: 0;
+    top: -12px;
+}
+.marksOnGun1, .marksOnGun2, .marksOnGun3 {
+    position: absolute;
+    height: 11px;
+    width: 38px;
+    background-image: url('../data/images/marks.png');
+    background-size: 100%;
+    background-repeat: no-repeat;
+    right: 3px;
+    top: 7px;
+}
+.marksOnGun1 {
+    background-position: 0 0;
+}
+.marksOnGun2 {
+    background-position: 0 -12px;
+}
+.marksOnGun3 {
+    background-position: 0 -24px;
+}
 .pointer { cursor: pointer; margin-left: 20px; }
 .in_angar {
     border: 1px solid green;
