@@ -5,6 +5,7 @@
   "main": "index.html",
   "scripts": {
     "start": "webpack-dev-server --progress --colors",
+    "build": "webpack",
     "test": "test"
   },
   "repository": {

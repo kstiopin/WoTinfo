@@ -6,6 +6,8 @@ import TopPanel from './components/TopPanel.jsx';
 import MainTab from './components/MainTab.jsx';
 import TanksTree from './components/TanksTree.jsx';
 
+import { setWN8data } from './helpers';
+
 import { accountId, accessToken, apiUrl, applicationId } from './config/config';
 
 class App extends React.Component {
@@ -41,7 +43,7 @@ class App extends React.Component {
             userData.tankData[tankStats.tank_id] = Object.assign({}, tankStats);
           });
           axios.get(`${apiUrl}tanks/achievements/${applicationId}&account_id=${accountId}${accessToken}`).then(resp => {
-            resp.data[accountId].forEach((tankAchievements) => {
+            resp.data.data[accountId].forEach((tankAchievements) => {
               userData.tankData[tankAchievements.tank_id].marksOnGun = tankAchievements.achievements.marksOnGun;
             });
             console.log(`getAccData(${accountId}) userData`, userData);
