@@ -26,6 +26,7 @@ class App extends React.Component {
     const { accountId } = this.props;
     console.log(`request acc data for ${accountId}`);
     this.getAccData(accountId);
+    this.getAccounts();
   }
 
   /**
@@ -105,6 +106,42 @@ class App extends React.Component {
   }
 
   /**
+   * Get accounts that we have in the DB
+   */
+  getAccounts = () => {
+    axios.get('../api/accounts.php').then(resp => {
+      const accountsData = [];
+      Object.keys(resp.data).forEach((account) => {
+        accountsData.push(resp.data[account]);
+      });
+      this.sortAccounts('wn8', accountsData);
+    });
+  }
+
+  /**
+   * Sort accounts array
+   * @param field {string} sorting criteria
+   * @param data {array} accounts
+   */
+  sortAccounts = (field, data = false) => {
+    let { accountsData} = this.state;
+    if (data) {
+      accountsData = data;
+    }
+    accountsData.sort(function(a, b) {
+      let aField = a[field],
+        bField = b[field];
+      if (field !== 'nickname') {
+        aField *= 1;
+        bField *= 1;
+      }
+      return (aField < bField) ? 1 : ((aField > bField) ? -1 : 0);
+    });
+
+    this.setState({ accountsData });
+  }
+
+  /**
    * Update DB with data from WG api
    * @param data {object}
    */
@@ -121,11 +158,18 @@ class App extends React.Component {
   setActiveTab = (activeTab) => this.setState({ activeTab })
 
   render() {
-    const { activeTab, userData, playerTanks } = this.state;
+    const { activeTab, accountsData, userData, playerTanks } = this.state;
 
     return (<div>
-      <TopPanel activeTab={ activeTab } playerTanks={ playerTanks } setActiveTab={ this.setActiveTab } />
-      { (activeTab === 'main') && userData && <MainTab userData={ userData } getUser={ this.getAccData } /> }
+      <TopPanel
+        activeTab={ activeTab }
+        playerTanks={ playerTanks }
+        setActiveTab={ this.setActiveTab } />
+      { (activeTab === 'main') && userData && <MainTab
+        userData={ userData }
+        accounts={ accountsData }
+        getUser={ this.getAccData }
+        sortAccounts={ this.sortAccounts } /> }
       { (activeTab !== 'main') && userData && <TanksTree userData={ userData } /> }
     </div>);
   }

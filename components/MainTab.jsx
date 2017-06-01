@@ -13,7 +13,7 @@ export class MainTab extends React.Component {
   toggleAccounts = () => this.setState(prevState => ({ showAccounts: !prevState.showAccounts }))
 
   render() {
-    const { userData, getUser } = this.props;
+    const { userData, accounts, getUser, sortAccounts } = this.props;
     const { showAccounts } = this.state;
     const { statistics, account_id, nickname, global_rating, wn8 } = userData,
       { battles, wins, xp, damage_dealt } = statistics.all,
@@ -77,15 +77,24 @@ export class MainTab extends React.Component {
           { showAccounts && <table>
             <thead>
             <tr>
-              <th>Name</th>
-              <th>Battles</th>
-              <th>WR</th>
-              <th>WG</th>
-              <th>WN8</th>
+              <th className='pointer' onClick={ () => sortAccounts('nickname') }>Name</th>
+              <th className='pointer' onClick={ () => sortAccounts('battles') }>Battles</th>
+              <th className='pointer' onClick={ () => sortAccounts('winrate') }>WR</th>
+              <th className='pointer' onClick={ () => sortAccounts('wg') }>WG</th>
+              <th className='pointer' onClick={ () => sortAccounts('wn8') }>WN8</th>
               <th>Tanks in angar</th>
             </tr>
             </thead>
-            <tbody></tbody>
+            <tbody>
+              { accounts.map((account) => (<tr key={ account.account_id }>
+                <td><span onClick={ () => getUser(account.account_id) }>{ account.nickname }</span></td>
+                <td className={ getColor('battles', account.battles) }>{ account.battles }</td>
+                <td className={ getColor('winrate', account.winrate) }>{ account.winrate }</td>
+                <td className={ getColor('wg', account.wg) }>{ account.wg }</td>
+                <td className={ getColor('wn8', account.wn8) }>{ account.wn8 }</td>
+                <td className="green">{ account.angar ? account.angar.split(',').length : '' }</td>
+              </tr>)) }
+            </tbody>
           </table> }
         </div>
       </div>
