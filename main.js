@@ -4,7 +4,7 @@ import axios from 'axios';
 
 import TopPanel from './components/TopPanel.jsx';
 import MainTab from './components/MainTab.jsx';
-import TanksTree from './components/TanksTree.jsx';
+import TanksTab from './components/TanksTab.jsx';
 
 import { setWN8data, calcWN8 } from './helpers';
 
@@ -19,14 +19,18 @@ class App extends React.Component {
       userData: false,
       accountsData: [],
       tanksData: false,
+      tanksWN8: [],
     };
   }
 
   componentWillMount() {
-    const { accountId } = this.props;
-    console.log(`request acc data for ${accountId}`);
-    this.getAccData(accountId);
-    this.getAccounts();
+    axios.get(`../api/tanks.php`).then(resp => {
+      this.setState({ tanksWN8: setWN8data(JSON.parse(resp.data).data) });
+      const { accountId } = this.props;
+      console.log(`request acc data for ${accountId}`);
+      this.getAccData(accountId);
+      this.getAccounts();
+    });
   }
 
   /**
@@ -52,7 +56,7 @@ class App extends React.Component {
             // Get tanks data for trees and wn8 rating from http://stat.modxvm.com/wn8.json
             axios.get(`../api/tanks.php?account_id=${accountId}`).then(resp => {
               const tanksData = resp.data.tanks;
-              const tanksWN8 = setWN8data(JSON.parse(resp.data.wn8).data);
+              const { tanksWN8 } = this.state;
               let playerTanks = 0;
               const { statistics, tankData, account_id, nickname, global_rating } = userData,
                 { battles, wins, damage_dealt, frags, spotted, dropped_capture_points } = statistics.all,
@@ -158,7 +162,7 @@ class App extends React.Component {
   setActiveTab = (activeTab) => this.setState({ activeTab })
 
   render() {
-    const { activeTab, accountsData, userData, playerTanks } = this.state;
+    const { activeTab, accountsData, userData, tanksData, playerTanks, tanksWN8 } = this.state;
 
     return (<div>
       <TopPanel
@@ -170,7 +174,11 @@ class App extends React.Component {
         accounts={ accountsData }
         getUser={ this.getAccData }
         sortAccounts={ this.sortAccounts } /> }
-      { (activeTab !== 'main') && userData && <TanksTree userData={ userData } /> }
+      { (activeTab !== 'main') && userData && <TanksTab
+        activeTab={ activeTab }
+        userData={ userData }
+        tanksData={ tanksData }
+        tanksWN8={ tanksWN8 } /> }
     </div>);
   }
 }

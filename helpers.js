@@ -1,3 +1,5 @@
+import React from 'react';
+
 /**
  * Get WN8 rating for user data
  * @param damage
@@ -62,7 +64,7 @@ export function getColor(type, value) {
 export function getTankTypeImg(type) {
   const labels = { lightTank: 'Лёгкий танк', mediumTank: 'Средний танк', heavyTank: 'Тяжёлый танк', 'AT-SPG': 'ПТ САУ', SPG: 'САУ' };
 
-  return `<img src="../images/type-${type}.png" align="top" alt="${labels[type]}" title="${labels[type]}" />`;
+  return <img src={ `../data/images/type-${type}.png` } alt={ labels[type] } title={ labels[type] } />;
 }
 
 /**

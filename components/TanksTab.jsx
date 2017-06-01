@@ -1,10 +1,21 @@
 import React from 'react';
 
-export class TanksTree extends React.Component {
+import Tank from './Tank.jsx';
+
+export class TanksTab extends React.Component {
   render() {
-    const { activeTab, userData } = this.props;
+    const { activeTab, userData, tanksData, tanksWN8 } = this.props;
     const { account_id, nickname } = userData;
-    console.log('TopPanel RENDER', activeTab);
+
+    const tanksToAdd = [];
+    tanksData.forEach((tank) => {
+      const { id, nation } = tank,
+        userTankData = userData.tankData[id];
+
+      if ((nation === activeTab) || ((activeTab === 'angar') && userTankData && userTankData.in_garage && (userTankData.all.battles > 0))) {
+        tanksToAdd.push(Object.assign({}, tank, { userTankData: userData.tankData[id] }));
+      }
+    });
 
     return (<div>
       <div className='tree_head'>
@@ -26,20 +37,13 @@ export class TanksTree extends React.Component {
           <div className='levelLine' style={ { left: '972px' } }></div>
           <div className='levelLine' style={ { left: '1296px' } }></div>
           <div id='levels'><div>I</div><div>II</div><div>III</div><div>IV</div><div>V</div><div>VI</div><div>VII</div><div>VIII</div><div>IX</div><div>X</div></div>
-          <div id='tree-ussr' className='tree'></div>
-          <div id='tree-germany' className='tree'></div>
-          <div id='tree-usa' className='tree'></div>
-          <div id='tree-france' className='tree'></div>
-          <div id='tree-uk' className='tree'></div>
-          <div id='tree-china' className='tree'></div>
-          <div id='tree-japan' className='tree'></div>
-          <div id='tree-czech' className='tree'></div>
-          <div id='tree-sweden' className='tree'></div>
-          <div id='angar' className='tree'></div>
+          <div className='tree'>
+            { tanksToAdd.map(tank => <Tank key={ tank.id } tank={ tank } tankWN8={ tanksWN8[tank.id] } />) }
+          </div>
         </div>
       </div>
     </div>);
   }
 }
 
-export default TanksTree;
+export default TanksTab;

@@ -87,7 +87,7 @@ export class MainTab extends React.Component {
             </thead>
             <tbody>
               { accounts.map((account) => (<tr key={ account.account_id }>
-                <td><span onClick={ () => getUser(account.account_id) }>{ account.nickname }</span></td>
+                <td><span onClick={ () => { this.toggleAccounts(); getUser(account.account_id); } }>{ account.nickname }</span></td>
                 <td className={ getColor('battles', account.battles) }>{ account.battles }</td>
                 <td className={ getColor('winrate', account.winrate) }>{ account.winrate }</td>
                 <td className={ getColor('wg', account.wg) }>{ account.wg }</td>
