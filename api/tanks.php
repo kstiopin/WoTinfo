@@ -20,7 +20,7 @@ curl_setopt($ch, CURLOPT_URL, 'http://stat.modxvm.com/wn8.json');
 curl_setopt($ch, CURLOPT_POST, 0);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 // execute post
-$result['wn8'] = curl_exec($ch);
+$result['wn8'] = curl_exec($ch); // TODO: check if we have json here, otherwise get data from local file
 //close connection
 curl_close($ch);
 

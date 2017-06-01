@@ -6,7 +6,7 @@ import TopPanel from './components/TopPanel.jsx';
 import MainTab from './components/MainTab.jsx';
 import TanksTree from './components/TanksTree.jsx';
 
-import { setWN8data } from './helpers';
+import { setWN8data, calcWN8 } from './helpers';
 
 import { accountId, accessToken, apiUrl, applicationId } from './config/config';
 
@@ -16,10 +16,9 @@ class App extends React.Component {
     this.state = {
       activeTab: 'main',
       playerTanks: 0,
-      tanksWN8: {},
       userData: false,
       accountsData: [],
-      tankData: false,
+      tanksData: false,
     };
   }
 
@@ -29,7 +28,10 @@ class App extends React.Component {
     this.getAccData(accountId);
   }
 
-  // this should be a saga
+  /**
+   * Load data for an account / this should be a saga
+   * @param accountId {int|string} if not account_id, will try search by name
+   */
   getAccData = (accountId) => {
     if (/^[0-9]+$/.test(accountId)) {
       // if we have an ID -> get the data
@@ -38,7 +40,6 @@ class App extends React.Component {
         const userData = resp.data.data[accountId];
         axios.get(`${apiUrl}tanks/stats/${applicationId}&account_id=${accountId}${accessToken}`).then(resp => {
           userData.tankData = {};
-          let tankData, tanksWN8;
           resp.data.data[accountId].forEach((tankStats) => {
             userData.tankData[tankStats.tank_id] = Object.assign({}, tankStats);
           });
@@ -49,38 +50,83 @@ class App extends React.Component {
             console.log(`getAccData(${accountId}) userData`, userData);
             // Get tanks data for trees and wn8 rating from http://stat.modxvm.com/wn8.json
             axios.get(`../api/tanks.php?account_id=${accountId}`).then(resp => {
-              tankData = resp.data.tanks;
-              if (resp.data.wn8) {
-                tanksWN8 = setWN8data(JSON.parse(resp.data.wn8).data);
-              }
-              /* fillAccountData(userData);
-              buildNationTrees(tankData);
-              if (resp.angarTanks > 0) {
-                $('#angar-tab span').html(resp.angarTanks);
-                $('#angar-tab').removeClass('hidden');
-              } else {
-                $('#angar-tab span').html(0);
-                $('#angar-tab').addClass('hidden');
-              } */
-              this.setState({ userData, tankData, tanksWN8 });
+              const tanksData = resp.data.tanks;
+              const tanksWN8 = setWN8data(JSON.parse(resp.data.wn8).data);
+              let playerTanks = 0;
+              const { statistics, tankData, account_id, nickname, global_rating } = userData,
+                { battles, wins, damage_dealt, frags, spotted, dropped_capture_points } = statistics.all,
+                winrate = wins / battles * 100,
+                averageDmg = damage_dealt / battles,
+                averageFrags = frags / battles,
+                averageSpotted = spotted / battles,
+                averageDef = dropped_capture_points / battles,
+                angar = [];
+              // подсчёт WN8
+              const expected = { frg: 0, dmg: 0, spo: 0, def: 0, win: 0, battles: 0 };
+              Object.keys(tankData).forEach((tid) => {
+                let tb = tankData[tid].all.battles;
+                if (tankData[tid].in_garage) {
+                  angar.push(tid);
+                  playerTanks++;
+                }
+                if (typeof(tanksWN8[tid]) !== "undefined") {
+                  expected['frg'] += tb * tanksWN8[tid].expFrag;
+                  expected['dmg'] += tb * tanksWN8[tid].expDamage;
+                  expected['spo'] += tb * tanksWN8[tid].expSpot;
+                  expected['def'] += tb * tanksWN8[tid].expDef;
+                  expected['win'] += tb * tanksWN8[tid].expWinRate;
+                  expected['battles'] += tb;
+                }
+              });
+              const wn8  = calcWN8( // TODO: send expected array to have less params
+                averageDmg * expected['battles'],
+                expected['dmg'],
+                averageFrags * expected['battles'],
+                expected['frg'],
+                averageSpotted * expected['battles'],
+                expected['spo'],
+                averageDef * expected['battles'],
+                expected['def'],
+                winrate * expected['battles'],
+                expected['win']
+              );
+              userData.wn8 = wn8;
+              // обновление данных по аккаунту в базе
+              this.fillAccountData({ account_id, nickname, battles, winrate, wg: global_rating, wn8, angar });
+
+              this.setState({ userData, tanksData, playerTanks });
             });
           });
         });
       });
     } else {
-      // search for user
+      // TODO: search for user
     }
+  }
+
+  /**
+   * Update DB with data from WG api
+   * @param data {object}
+   */
+  fillAccountData = (data) => {
+    var params = new URLSearchParams();
+    Object.keys(data).forEach((key) => {
+      params.append(key, data[key]);
+    });
+    axios.post('../api/accounts.php', params).then(resp => {
+      console.log(`account ${resp.data} updated`);
+    });
   }
 
   setActiveTab = (activeTab) => this.setState({ activeTab })
 
   render() {
-    const { activeTab, playerTanks } = this.state;
+    const { activeTab, userData, playerTanks } = this.state;
 
     return (<div>
       <TopPanel activeTab={ activeTab } playerTanks={ playerTanks } setActiveTab={ this.setActiveTab } />
-      { (activeTab === 'main') && <MainTab /> }
-      { (activeTab !== 'main') && <TanksTree /> }
+      { (activeTab === 'main') && userData && <MainTab userData={ userData } getUser={ this.getAccData } /> }
+      { (activeTab !== 'main') && userData && <TanksTree userData={ userData } /> }
     </div>);
   }
 }

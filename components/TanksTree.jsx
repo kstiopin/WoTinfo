@@ -2,12 +2,21 @@ import React from 'react';
 
 export class TanksTree extends React.Component {
   render() {
-    const { activeTab, playerTanks } = this.props;
+    const { activeTab, userData } = this.props;
+    const { account_id, nickname } = userData;
     console.log('TopPanel RENDER', activeTab);
 
     return (<div>
       <div className='tree_head'>
-        <h1 style={ { display: 'inline' } }>WoT :: <span id='noobmeter_link'></span>, <span id='wots_link'></span>, <span id='kttc_link'></span> — техника игрока в дереве развития</h1>
+        <h1 style={ { display: 'inline' } }>
+          WoT :: <span id='noobmeter_link'>
+            <a href={ `http://www.noobmeter.com/player/ru/${nickname.toLowerCase()}/${account_id}/` }>Noobmeter</a>
+          </span>, <span id='wots_link'>
+            <a href={ `http://wots.com.ua/user/stats/${nickname.toLowerCase()}` }>WOTS</a>
+          </span>, <span id='kttc_link'>
+            <a href={ `https://kttc.ru/wot/ru/user/${nickname.toLowerCase()}/` }>KTTC</a>
+          </span> — техника игрока в дереве развития
+        </h1>
       </div>
       <div className='nationTree' id='ntree'>
         <div className='treeWrapper'>
