@@ -6,7 +6,7 @@ import { accessToken } from '../config/config';
 
 export class Tank extends React.Component {
   render() {
-    const { tank, tankWN8 } = this.props,
+    const { activeTab, tank, tankWN8 } = this.props,
       { id, row, image_small, name, short_name, level, type, in_angar, is_premium, relations, userTankData } = tank;
     let hasUserData = false,
       battles,
@@ -30,7 +30,7 @@ export class Tank extends React.Component {
       wn8 = calcWN8(avgDmg, expDamage, frags / battles, expFrag, spotted / battles, expSpot, dropped_capture_points / battles, expDef, tankWinrate, expWinRate);
     }
     const relationsArray = [];
-    if (relations) {
+    if ((activeTab !== 'angar') && relations) {
       relations.split('<img').forEach((relation) => {
         if (relation !== '') {
           let _class = relation.substr(relation.indexOf('class="') + 7);

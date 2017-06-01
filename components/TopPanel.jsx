@@ -3,7 +3,6 @@ import React from 'react';
 export class TopPanel extends React.Component {
   render() {
     const { activeTab, playerTanks, setActiveTab } = this.props;
-    console.log('TopPanel RENDER', activeTab);
     const tabsData = [
       { key: 'main', label: 'Статистика'},
       { key: 'ussr', label: 'СССР'},
@@ -19,6 +18,7 @@ export class TopPanel extends React.Component {
     if (playerTanks > 0) {
       tabsData.push({ key: 'angar', label: `Ангар (${playerTanks})`});
     }
+    // console.log('TopPanel RENDER', activeTab, playerTanks);
 
     return (<div id='content'>
       <ul id='nations'>

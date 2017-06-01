@@ -70,7 +70,7 @@ class App extends React.Component {
               const expected = { frg: 0, dmg: 0, spo: 0, def: 0, win: 0, battles: 0 };
               Object.keys(tankData).forEach((tid) => {
                 let tb = tankData[tid].all.battles;
-                if (tankData[tid].in_garage) {
+                if (tankData[tid].in_garage) { // if no token will always be null
                   angar.push(tid);
                   playerTanks++;
                 }
@@ -99,7 +99,7 @@ class App extends React.Component {
               // обновление данных по аккаунту в базе
               this.fillAccountData({ account_id, nickname, battles, winrate, wg: global_rating, wn8, angar });
 
-              this.setState({ userData, tanksData, playerTanks });
+              this.setState({ userData, tanksData, playerTanks: (playerTanks > 0) ? playerTanks : resp.data.angarTanks });
             });
           });
         });
@@ -165,10 +165,10 @@ class App extends React.Component {
     const { activeTab, accountsData, userData, tanksData, playerTanks, tanksWN8 } = this.state;
 
     return (<div>
-      <TopPanel
+      { userData && <TopPanel
         activeTab={ activeTab }
         playerTanks={ playerTanks }
-        setActiveTab={ this.setActiveTab } />
+        setActiveTab={ this.setActiveTab } /> }
       { (activeTab === 'main') && userData && <MainTab
         userData={ userData }
         accounts={ accountsData }

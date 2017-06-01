@@ -8,12 +8,30 @@ export class TanksTab extends React.Component {
     const { account_id, nickname } = userData;
 
     const tanksToAdd = [];
+    const maxRows = {};
     tanksData.forEach((tank) => {
-      const { id, nation } = tank,
+      const { id, nation, level, row } = tank,
         userTankData = userData.tankData[id];
 
-      if ((nation === activeTab) || ((activeTab === 'angar') && userTankData && userTankData.in_garage && (userTankData.all.battles > 0))) {
-        tanksToAdd.push(Object.assign({}, tank, { userTankData: userData.tankData[id] }));
+      if ((nation === activeTab) || ((activeTab === 'angar') && userTankData && tank.in_angar && (userTankData.all.battles > 0))) {
+        const addData = { userTankData: userData.tankData[id] };
+        if (activeTab === 'angar') {
+          if (!maxRows.hasOwnProperty(level)) {
+            maxRows[level] = 1;
+          }
+          addData.row = maxRows[level]++;
+          tanksToAdd.push(Object.assign({}, tank, addData));
+        } else if (row > 11) {
+          if (!maxRows.hasOwnProperty(level)) {
+            maxRows[level] = 12;
+          }
+          if (userTankData) {
+            addData.row = maxRows[level]++;
+            tanksToAdd.push(Object.assign({}, tank, addData));
+          }
+        } else {
+          tanksToAdd.push(Object.assign({}, tank, addData));
+        }
       }
     });
 
@@ -38,7 +56,7 @@ export class TanksTab extends React.Component {
           <div className='levelLine' style={ { left: '1296px' } }></div>
           <div id='levels'><div>I</div><div>II</div><div>III</div><div>IV</div><div>V</div><div>VI</div><div>VII</div><div>VIII</div><div>IX</div><div>X</div></div>
           <div className='tree'>
-            { tanksToAdd.map(tank => <Tank key={ tank.id } tank={ tank } tankWN8={ tanksWN8[tank.id] } />) }
+            { tanksToAdd.map(tank => <Tank key={ tank.id } activeTab={ activeTab } tank={ tank } tankWN8={ tanksWN8[tank.id] } />) }
           </div>
         </div>
       </div>
