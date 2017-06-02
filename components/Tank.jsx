@@ -51,14 +51,14 @@ export class Tank extends React.Component {
         }
       });
     }
-    // console.log(`Tank ${id} RENDER`, name, hasUserData, userTankData);
+    // console.log(`Tank ${id} RENDER`, name, hasUserData, tank);
 
     return (<div className={ `tblock column${level} row${row}${in_garage ? ' in_angar' : ''}` } id={ `tank${id}` }>
       <div className="vicLogo"><img src={ `../data/images/${image_small}` } /></div>
       <span className="mark">{ (short_name.length <= name.length) ? short_name : name }</span>
       <span className="level">{ level }</span>
       <span className="class">{ getTankTypeImg(type) }</span>
-      { is_premium && <span className="golden"><img src="../data/images/gold.png" /></span> }
+      { (is_premium == 1) && <span className="golden"><img src="../data/images/gold.png" /></span> }
       { hasUserData && (userTankData.mark_of_mastery > 0) && <span className="mastery"><img src={ `../data/images/class${userTankData.mark_of_mastery}.png` } /></span> }
       { hasUserData && !!userTankData.marksOnGun && <div className={ `marksOnGun${userTankData.marksOnGun}` }></div> }
       { hasUserData && <div className="gamerbattles">
