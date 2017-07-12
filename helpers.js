@@ -212,6 +212,10 @@ export function setWN8data(wn8jsonData) {
     };
     console.log('added wn8 data for WZ-132-1 based on difference between WZ-132A and WZ-132', tanksWN8[5937]);
   }
+  if (!tanksWN8.hasOwnProperty(6193)) {
+    tanksWN8[6193] = tanksWN8[58913];
+    console.log('added wn8 data for WZ-111-5A from 113', tanksWN8[58657]);
+  }
 
   return tanksWN8;
 }
