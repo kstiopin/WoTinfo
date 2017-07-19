@@ -214,7 +214,11 @@ export function setWN8data(wn8jsonData) {
   }
   if (!tanksWN8.hasOwnProperty(6193)) {
     tanksWN8[6193] = tanksWN8[58913];
-    console.log('added wn8 data for WZ-111-5A from 113', tanksWN8[58657]);
+    console.log('added wn8 data for WZ-111-5A from 113', tanksWN8[6193]);
+  }
+  if (!tanksWN8.hasOwnProperty(49169)) {
+    tanksWN8[49169] = tanksWN8[52321];
+    console.log('added wn8 data for Tiger 131 from HT No. VI', tanksWN8[49169]);
   }
 
   return tanksWN8;
