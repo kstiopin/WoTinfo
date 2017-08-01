@@ -20212,3 +20212,22 @@ input[type="file"] {
   top: 0px;
   background-color: rgba(0, 0, 0, 0.5);
 }
+.b-personal-data {
+  position: relative;
+}
+.b-personal-data > span {
+  position: absolute;
+  top: 10px;
+  font-size: 17px;
+  cursor: pointer;
+  display: none;
+}
+.b-personal-data > span.active {
+  color: #f25322;
+}
+#random-link {
+  left: 10px;
+}
+#ranked-link {
+  left: 85px;
+}

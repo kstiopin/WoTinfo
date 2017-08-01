@@ -35,26 +35,26 @@ class App extends React.Component {
 
   /**
    * Load data for an account / this should be a saga
-   * @param accountId {int|string} if not account_id, will try search by name
+   * @param account {int|string} if not account_id, will try search by name
    */
-  getAccData = (accountId) => {
-    if (/^[0-9]+$/.test(accountId)) {
+  getAccData = (account) => {
+    if (/^[0-9]+$/.test(account)) {
       // if we have an ID -> get the data
-      localStorage.setItem('defaultAccount', accountId);
-      axios.get(`${apiUrl}account/info/${applicationId}&account_id=${accountId}${accessToken}`).then(resp => {
-        const userData = resp.data.data[accountId];
-        axios.get(`${apiUrl}tanks/stats/${applicationId}&account_id=${accountId}${accessToken}`).then(resp => {
+      localStorage.setItem('defaultAccount', account);
+      axios.get(`${apiUrl}account/info/${applicationId}&account_id=${account}${accessToken}`).then(resp => {
+        const userData = resp.data.data[account];
+        axios.get(`${apiUrl}tanks/stats/${applicationId}&account_id=${account}${accessToken}`).then(resp => {
           userData.tankData = {};
-          resp.data.data[accountId].forEach((tankStats) => {
+          resp.data.data[account].forEach((tankStats) => {
             userData.tankData[tankStats.tank_id] = Object.assign({}, tankStats);
           });
-          axios.get(`${apiUrl}tanks/achievements/${applicationId}&account_id=${accountId}${accessToken}`).then(resp => {
-            resp.data.data[accountId].forEach((tankAchievements) => {
+          axios.get(`${apiUrl}tanks/achievements/${applicationId}&account_id=${account}${accessToken}`).then(resp => {
+            resp.data.data[account].forEach((tankAchievements) => {
               userData.tankData[tankAchievements.tank_id].marksOnGun = tankAchievements.achievements.marksOnGun;
             });
-            console.log(`getAccData(${accountId}) userData`, userData);
+            console.log(`getAccData(${account}) userData`, userData);
             // Get tanks data for trees and wn8 rating from http://stat.modxvm.com/wn8.json
-            axios.get(`../api/tanks.php?account_id=${accountId}`).then(resp => {
+            axios.get(`../api/tanks.php?account_id=${account}`).then(resp => {
               const tanksData = resp.data.tanks;
               const { tanksWN8 } = this.state;
               let playerTanks = 0;
@@ -105,7 +105,22 @@ class App extends React.Component {
         });
       });
     } else {
-      // TODO: search for user
+      axios.get(`${apiUrl}account/list/${applicationId}&search=${account}`).then(resp => {
+        if (resp.data.data.length > 0) {
+          let userIsFound = false;
+          resp.data.data.forEach((userFound) => {
+            if (userFound.nickname === account) {
+              userIsFound = true;
+              this.getAccData(userFound.account_id);
+            }
+          });
+          if (!userIsFound) {
+            alert('No 100% match found! Please try again or contaсt skype: salvation131');
+          }
+        } else {
+          alert('No players found! Please contact skype: salvation131');
+        }
+      });
     }
   }
 
