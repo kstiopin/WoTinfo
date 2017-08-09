@@ -13,6 +13,7 @@ export class TopPanel extends React.Component {
       { key: 'china', label: 'Китай'},
       { key: 'japan', label: 'Япония'},
       { key: 'czech', label: 'Чехия'},
+      { key: 'poland', label: 'Польша'},
       { key: 'sweden', label: 'Швеция'},
     ];
     if (playerTanks > 0) {

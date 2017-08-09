@@ -220,6 +220,10 @@ export function setWN8data(wn8jsonData) {
     tanksWN8[49169] = tanksWN8[52321];
     console.log('added wn8 data for Tiger 131 from HT No. VI', tanksWN8[49169]);
   }
+  if (!tanksWN8.hasOwnProperty(145)) {
+    tanksWN8[145] = tanksWN8[15889];
+    console.log('added wn8 data for Pudel from VK 30.02 M', tanksWN8[145]);
+  }
 
   return tanksWN8;
 }
