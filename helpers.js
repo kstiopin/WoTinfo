@@ -224,6 +224,46 @@ export function setWN8data(wn8jsonData) {
     tanksWN8[145] = tanksWN8[15889];
     console.log('added wn8 data for Pudel from VK 30.02 M', tanksWN8[145]);
   }
+  if (!tanksWN8.hasOwnProperty(6449)) {
+    tanksWN8[6449] = tanksWN8[5121];
+    console.log('added wn8 data for T-26G FT from AT-1', tanksWN8[6449]);
+  }
+  if (!tanksWN8.hasOwnProperty(6705)) {
+    tanksWN8[6705] = tanksWN8[6401];
+    console.log('added wn8 data for M3G FT from СУ-76М', tanksWN8[6705]);
+  }
+  if (!tanksWN8.hasOwnProperty(6961)) {
+    tanksWN8[6961] = tanksWN8[6913];
+    console.log('added wn8 data for SU-76G FT from СУ-85Б', tanksWN8[6961]);
+  }
+  if (!tanksWN8.hasOwnProperty(7217)) {
+    tanksWN8[7217] = tanksWN8[257];
+    console.log('added wn8 data for 60G FT from СУ-85', tanksWN8[7217]);
+  }
+  if (!tanksWN8.hasOwnProperty(7473)) {
+    tanksWN8[7473] = tanksWN8[3585];
+    console.log('added wn8 data for WZ-131G FT from СУ-100', tanksWN8[7473]);
+  }
+  if (!tanksWN8.hasOwnProperty(7729)) {
+    tanksWN8[7729] = tanksWN8[10241];
+    console.log('added wn8 data for T-34-2G FT from СУ-100М1', tanksWN8[7729]);
+  }
+  if (!tanksWN8.hasOwnProperty(7985)) {
+    tanksWN8[7985] = tanksWN8[9985];
+    console.log('added wn8 data for WZ-111-1G FT from СУ-101', tanksWN8[7985]);
+  }
+  if (!tanksWN8.hasOwnProperty(8241)) {
+    tanksWN8[8241] = tanksWN8[8193];
+    console.log('added wn8 data for WZ-111G FT from Об. 704', tanksWN8[8241]);
+  }
+  if (!tanksWN8.hasOwnProperty(8497)) {
+    tanksWN8[8497] = tanksWN8[13569];
+    console.log('added wn8 data for WZ-113G FT from Об. 268', tanksWN8[8497]);
+  }
+  if (!tanksWN8.hasOwnProperty(63281)) {
+    tanksWN8[63281] = tanksWN8[11537];
+    console.log('added wn8 data for WZ-120-1G FT from JPanther II', tanksWN8[63281]);
+  }
 
   return tanksWN8;
 }

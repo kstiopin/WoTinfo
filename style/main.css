@@ -20231,3 +20231,17 @@ input[type="file"] {
 #ranked-link {
   left: 85px;
 }
+
+div.vicLogo.big {
+  margin-left: 0;
+}
+
+div.vicLogo.big > img {
+  object-fit: cover;
+  display: block;
+  width: 80px;
+  height: 30px;
+  margin-top: 1px;
+  margin-left: 3px;
+  margin-bottom: 4px;
+}

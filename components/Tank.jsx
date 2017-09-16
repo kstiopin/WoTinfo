@@ -7,7 +7,7 @@ import { accessToken } from '../config/config';
 export class Tank extends React.Component {
   render() {
     const { activeTab, tank } = this.props,
-      { id, row, image_small, name, short_name, level, type, in_angar, is_premium, relations, userTankData } = tank;
+      { id, row, image, image_small, name, short_name, level, type, in_angar, is_premium, relations, userTankData } = tank;
     let tankWN8 = { expDamage: 0, expFrag: 0, expSpot: 0, expDef: 0, expWinRate: 0 };
     if (this.props.tankWN8) {
       tankWN8 = this.props.tankWN8;
@@ -58,7 +58,9 @@ export class Tank extends React.Component {
     // console.log(`Tank ${id} RENDER`, name, hasUserData, tank);
 
     return (<div className={ `tblock column${level} row${row}${in_garage ? ' in_angar' : ''}` } id={ `tank${id}` }>
-      <div className="vicLogo"><img src={ `../data/images/${image_small}` } /></div>
+      <div className={ `vicLogo${image ? ' big' : ''}` }>
+        <img src={ `../data/images/${image_small ? image_small : image}` } />
+      </div>
       <span className="mark">{ (short_name.length <= name.length) ? short_name : name }</span>
       <span className="level">{ level }</span>
       <span className="class">{ getTankTypeImg(type) }</span>
