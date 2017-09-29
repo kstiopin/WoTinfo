@@ -6,7 +6,7 @@ import TopPanel from './components/TopPanel.jsx';
 import MainTab from './components/MainTab.jsx';
 import TanksTab from './components/TanksTab.jsx';
 
-import { setWN8data, calcWN8 } from './helpers';
+import { calcWN8, setWN8data } from './wn8helper';
 
 import { accountId, accessToken, apiUrl, applicationId } from './config/config';
 

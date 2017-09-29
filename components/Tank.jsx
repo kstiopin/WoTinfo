@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { calcWN8, getColor, getTankTypeImg } from '../helpers';
+import { getColor, getTankTypeImg } from '../helpers';
+import { calcWN8 } from '../wn8helper';
 
 import { accessToken } from '../config/config';
 
@@ -59,7 +60,7 @@ export class Tank extends React.Component {
 
     return (<div className={ `tblock column${level} row${row}${in_garage ? ' in_angar' : ''}` } id={ `tank${id}` }>
       <div className={ `vicLogo${image ? ' big' : ''}` }>
-        <img src={ `../data/images/${image_small ? image_small : image}` } />
+        <img src={ `../data/images/${image ? image : image_small}` } />
       </div>
       <span className="mark">{ (short_name.length <= name.length) ? short_name : name }</span>
       <span className="level">{ level }</span>
