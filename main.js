@@ -6,7 +6,7 @@ import TopPanel from './components/TopPanel.jsx';
 import MainTab from './components/MainTab.jsx';
 import TanksTab from './components/TanksTab.jsx';
 
-import { calcWN8, setWN8data } from './wn8helper';
+import { calcWN8 } from './helpers';
 
 import { accountId, accessToken, apiUrl, applicationId } from './config/config';
 
@@ -25,7 +25,7 @@ class App extends React.Component {
 
   componentWillMount() {
     axios.get(`../api/tanks.php`).then(resp => {
-      this.setState({ tanksWN8: setWN8data(JSON.parse(resp.data).data) });
+      this.setState({ tanksWN8: resp.data.wn8 });
       const { accountId } = this.props;
       console.log(`request acc data for ${accountId}`);
       this.getAccData(accountId);
@@ -55,7 +55,7 @@ class App extends React.Component {
             console.log(`getAccData(${account}) userData`, userData);
             // Get tanks data for trees and wn8 rating from http://stat.modxvm.com/wn8.json
             axios.get(`../api/tanks.php?account_id=${account}`).then(resp => {
-              const tanksData = resp.data.tanks;
+              const tanksData = resp.data;
               const { tanksWN8 } = this.state;
               let playerTanks = 0;
               const { statistics, tankData, account_id, nickname, global_rating } = userData,

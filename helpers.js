@@ -62,3 +62,27 @@ export function getUrlParameter(sParam) {
     }
   }
 }
+
+/**
+ * Get WN8 rating for user data
+ * @param damage
+ * @param expDamage
+ * @param frags
+ * @param expFrags
+ * @param spotted
+ * @param expSpotted
+ * @param def
+ * @param expDef
+ * @param winrate
+ * @param expWinrate
+ * @returns {int} WN8 value
+ */
+export function calcWN8(damage, expDamage, frags, expFrags, spotted, expSpotted, def, expDef, winrate, expWinrate) {
+  const rDmg  = Math.max(((damage / expDamage - 0.22) / (1 - 0.22)), 0);
+  const rFrag = Math.max(Math.min(rDmg + 0.2,((frags / expFrags - 0.12) / (1 - 0.12))), 0);
+  const rSpot = Math.max(Math.min(rDmg + 0.1,(( spotted / expSpotted - 0.38) / (1 - 0.38))), 0);
+  const rDef  = Math.max(Math.min(rDmg + 0.1,(( def / expDef - 0.10) / (1 - 0.10))), 0);
+  const rWin  = Math.max((winrate / expWinrate - 0.71) / (1 - 0.71), 0);
+
+  return (980 * rDmg + 210 * rDmg * rFrag + 155 * rFrag * rSpot + 75 * rDef * rFrag + 145 * Math.min(1.8, rWin)).toFixed(0);
+}

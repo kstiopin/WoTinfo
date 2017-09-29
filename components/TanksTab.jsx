@@ -9,7 +9,8 @@ export class TanksTab extends React.Component {
 
     const tanksToAdd = [];
     const maxRows = {};
-    tanksData.forEach((tank) => {
+    Object.keys(tanksData).forEach(key => {
+      const tank = tanksData[key];
       const { id, nation, level, row } = tank,
         userTankData = userData.tankData[id];
 

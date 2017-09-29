@@ -1,7 +1,6 @@
 import React from 'react';
 
-import { getColor, getTankTypeImg } from '../helpers';
-import { calcWN8 } from '../wn8helper';
+import { calcWN8, getColor, getTankTypeImg } from '../helpers';
 
 import { accessToken } from '../config/config';
 
