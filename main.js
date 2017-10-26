@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import axios from 'axios';
 
 import TopPanel from './components/TopPanel.jsx';
 import MainTab from './components/MainTab.jsx';
@@ -8,7 +7,7 @@ import TanksTab from './components/TanksTab.jsx';
 
 import { calcWN8 } from './helpers';
 
-import { accountId, accessToken, apiUrl, applicationId } from './config/config';
+import { accountId, accessToken, apiUrl, applicationId, fetchHeaders } from './config/config';
 
 class App extends React.Component {
   constructor(props) {
@@ -24,8 +23,8 @@ class App extends React.Component {
   }
 
   componentWillMount() {
-    axios.get(`../api/tanks.php`).then(resp => {
-      this.setState({ tanksWN8: resp.data.wn8 });
+    fetch('../api/tanks.php', fetchHeaders).then(resp => resp.json()).then(data => {
+      this.setState({ tanksData: data.tanks, tanksWN8: data.wn8 });
       const { accountId } = this.props;
       console.log(`request acc data for ${accountId}`);
       this.getAccData(accountId);
@@ -41,21 +40,21 @@ class App extends React.Component {
     if (/^[0-9]+$/.test(account)) {
       // if we have an ID -> get the data
       localStorage.setItem('defaultAccount', account);
-      axios.get(`${apiUrl}account/info/${applicationId}&account_id=${account}${accessToken}`).then(resp => {
-        const userData = resp.data.data[account];
-        axios.get(`${apiUrl}tanks/stats/${applicationId}&account_id=${account}${accessToken}`).then(resp => {
+      fetch(`${apiUrl}account/info/${applicationId}&account_id=${account}${accessToken}`).then(resp => resp.json()).then(resp => {
+        const userData = resp.data[account];
+        fetch(`${apiUrl}tanks/stats/${applicationId}&account_id=${account}${accessToken}`).then(resp => resp.json()).then(resp => {
           userData.tankData = {};
-          resp.data.data[account].forEach((tankStats) => {
+          resp.data[account].forEach((tankStats) => {
             userData.tankData[tankStats.tank_id] = Object.assign({}, tankStats);
           });
-          axios.get(`${apiUrl}tanks/achievements/${applicationId}&account_id=${account}${accessToken}`).then(resp => {
-            resp.data.data[account].forEach((tankAchievements) => {
+          fetch(`${apiUrl}tanks/achievements/${applicationId}&account_id=${account}${accessToken}`).then(resp => resp.json()).then(resp => {
+            resp.data[account].forEach((tankAchievements) => {
               userData.tankData[tankAchievements.tank_id].marksOnGun = tankAchievements.achievements.marksOnGun;
             });
             console.log(`getAccData(${account}) userData`, userData);
             // Get tanks data for trees and wn8 rating from http://stat.modxvm.com/wn8.json
-            axios.get(`../api/tanks.php?account_id=${account}`).then(resp => {
-              const tanksData = resp.data;
+            fetch(`../api/tanks.php?account_id=${account}`, fetchHeaders).then(resp => resp.json()).then(resp => {
+              console.log('fetch api/tanks', account, resp);
               const { tanksWN8 } = this.state;
               let playerTanks = 0;
               const { statistics, tankData, account_id, nickname, global_rating } = userData,
@@ -99,16 +98,16 @@ class App extends React.Component {
               // обновление данных по аккаунту в базе
               this.fillAccountData({ account_id, nickname, battles, winrate, wg: global_rating, wn8, angar });
 
-              this.setState({ userData, tanksData, playerTanks: (playerTanks > 0) ? playerTanks : resp.data.angarTanks });
+              this.setState({ userData, playerTanks: (playerTanks > 0) ? playerTanks : resp.angarTanks });
             });
           });
         });
       });
     } else {
-      axios.get(`${apiUrl}account/list/${applicationId}&search=${account}`).then(resp => {
-        if (resp.data.data.length > 0) {
+      fetch(`${apiUrl}account/list/${applicationId}&search=${account}`).then(resp => resp.json()).then(data => {
+        if (data.data.length > 0) {
           let userIsFound = false;
-          resp.data.data.forEach((userFound) => {
+          data.data.forEach((userFound) => {
             if (userFound.nickname === account) {
               userIsFound = true;
               this.getAccData(userFound.account_id);
@@ -128,10 +127,10 @@ class App extends React.Component {
    * Get accounts that we have in the DB
    */
   getAccounts = () => {
-    axios.get('../api/accounts.php').then(resp => {
+    fetch('../api/accounts.php', fetchHeaders).then(resp => resp.json()).then(data => {
       const accountsData = [];
-      Object.keys(resp.data).forEach((account) => {
-        accountsData.push(resp.data[account]);
+      Object.keys(data).forEach((account) => {
+        accountsData.push(data[account]);
       });
       this.sortAccounts('wn8', accountsData);
     });
@@ -169,8 +168,8 @@ class App extends React.Component {
     Object.keys(data).forEach((key) => {
       params.append(key, data[key]);
     });
-    axios.post('../api/accounts.php', params).then(resp => {
-      console.log(`account ${resp.data} updated`);
+    fetch('../api/accounts.php', { method: 'POST', body: params }).then((resp) => {
+      console.log(`account ${resp} updated`);
     });
   }
 

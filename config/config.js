@@ -14,3 +14,11 @@ if (localStorage.getItem('defaultStatsTab') === null) {
   localStorage.setItem('defaultStatsTab', 'random');
 }
 export const defaultStatsTab = localStorage.getItem('defaultStatsTab');
+
+export const fetchHeaders = {
+  method: 'GET',
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+  }
+};

@@ -5,8 +5,7 @@
   "main": "index.html",
   "scripts": {
     "start": "webpack-dev-server --progress --colors",
-    "build": "webpack",
-    "test": "test"
+    "build": "webpack"
   },
   "repository": {
     "type": "git",
@@ -20,7 +19,6 @@
   "license": "ISC",
   "homepage": "https://bitbucket.org/Kirill_Stiopin/wotinfo#readme",
   "dependencies": {
-    "axios": "^0.16.1",
     "react": "^15.5.4",
     "react-dom": "^15.5.4"
   },
