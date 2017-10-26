@@ -1,89 +1,50 @@
-body {color: #BEBEBE; font-family: Calibri,sans-serif;}
-#content {margin: 0 auto; position: relative;  width:100%;}
-h1 {
-    font-size: 180%;
-    font-weight: normal;
-    border-bottom: 1px dotted #BEBEBE;
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+    background: transparent;
 }
-h2 {text-align: center;}
+html {
+    width: 100%;
+    height: 100%;
+}
+body {
+    font-size: 12px;
+    font-family: Arial, "Helvetica CY", Helvetica, sans-serif;
+    color: #979899;
+    position: relative;
+    background: #000;
+    word-break: keep-all;
+}
+h1 { font-weight: normal; }
+ol, ul { list-style: none; }
+a { color: #f25322; text-decoration: none; }
+p { line-height: 133%; word-wrap: break-word; margin: 0 0 11px 0; }
+table { border-collapse: collapse; border-spacing: 0; }
+td { vertical-align: top; }
+input, textarea { font-family: Arial, "Helvetica CY", Helvetica, sans-serif; }
+
+/* top navigation */
+#content {
+    margin: 0 auto;
+    position: relative;
+    width: 100%;
+}
 #nations {
     margin: 13px 0 30px;
     padding: 4px;
+    padding-left: 20%;
     border-bottom: 1px solid #BEBEBE;
 }
+#nations > li { cursor: pointer; }
 #nations li {
     display: inline;
     margin: 0;
     padding: 3px 15px;
     font-size: 110%;
-}
-#nations li.hidden {
-    display: none;
-}
-li.active {
-    background: #282516;
-    background: -moz-linear-gradient(top,  rgb(93,94,57) 0%, rgb(40,37,22) 64%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgb(93,94,57)), color-stop(64%,rgb(40,37,22))); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top,  rgb(93,94,57) 0%,rgb(40,37,22) 64%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top,  rgb(93,94,57) 0%,rgb(40,37,22) 64%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top,  rgb(93,94,57) 0%,rgb(40,37,22) 64%); /* IE10+ */
-    background: linear-gradient(top,  rgb(93,94,57) 0%,rgb(40,37,22) 64%); /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#5d5e39', endColorstr='#282516',GradientType=0 ); /* IE6-9 */
-    border: 1px solid #BEBEBE;
-    border-radius:5px 5px 0 0; -webkit-border-radius:5px 5px 0 0; -moz-border-radius:5px 5px 0 0;
-    border-bottom: none;
-    font-weight: bold;
-    position: relative;
-    top: 2px;
-}
-li.click {
-    cursor: pointer;
-}
-#versions {
-    position: relative;
-    margin: 8px;
-}
-#versions, #versions a {
-    color: #BEBEBE;
-    font-size: 14px;
-}
-#versions .tblock {
-    width: 32px; height: 32px;
-    display: inline-block;
-    margin-right: 12px;
-    padding: 2px;
-    vertical-align: middle;
-}
-#h_counters {
-    text-align: right;
-    margin-top: 20px;
-    margin-right: 1em;
-}
-.nationTree {
-    border-bottom: 1px solid #BEBEBE;
-}
-#main {
-    background-image: url('../data/images/ui-bg-tile.jpg');
-    background-attachment: scroll;
-    -webkit-background-size: 100%;
-    background-size: 100%;
-    display: block;
-}
-body {background-color: #060606;}
-img {border-width: 0; vertical-align: middle;}
-a {color: #FFF;}
-.treeWrapper {
-    position: relative;
-    width: 1612px;
-    height: 609px;
-    margin: 40px auto 0;
-    font-family: sans-serif; font-size: 1em;
-}
-#tree {
-    position: relative;
-    margin: 30px 8px 30px 16px;
-    width: 1612px;
-    height: inherit;
 }
 li.active {
     background: #060606;
@@ -94,13 +55,216 @@ li.active {
     background: -ms-linear-gradient(top,  rgba(89,89,89,1) 0%,#060606 64%); /* IE10+ */
     background: linear-gradient(top,  rgba(89,89,89,1) 0%,#060606 64%); /* W3C */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3c3c3c', endColorstr='#060606',GradientType=0 ); /* IE6-9 */
-
     border: 1px solid #BEBEBE;
     border-radius:5px 5px 0 0; -webkit-border-radius:5px 5px 0 0; -moz-border-radius:5px 5px 0 0;
     border-bottom: none;
     font-weight: bold;
     position: relative;
     top: 2px;
+}
+
+/* main tab */
+#main {
+    background-image: url('../data/images/ui-bg-tile.jpg');
+    background-attachment: scroll;
+    -webkit-background-size: 100%;
+    background-size: 100%;
+    display: block;
+}
+.l-footer-holder,.b-composite-heading,.b-user-block,.b-campaign-rating,.b-tournament-card_content,.b-tabs,.b-team-members,.b-season-info,.b-prize-choosing_wrapper,.b-recrut-info_body,.b-heavies,.b-heavies_head,.b-heavies_choosed,.b-search-sort,.b-selectbox-dropdown_text,.b-fieldset_holder,.b-search__sidebar,.b-news-timer {
+    clear: both;
+    zoom: 1;
+}
+.l-page {
+    overflow: hidden;
+    position: relative;
+    -webkit-transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    -webkit-perspective: 1000;
+    min-width: 1000px;
+}
+.nationTree { border-bottom: 1px solid #BEBEBE; }
+.l-body-content {
+    width: 999px;
+    margin: 0 auto;
+    position: relative;
+}
+/* main tab - данные игрока */
+.l-content {
+    margin: 25px 0 25px 25px;
+    width: 686px;
+}
+.b-profile-name {
+    float: left;
+    margin: 0 10px 14px 0;
+    max-width: 276px;
+}
+.l-page h1, .b-header-h1 {
+    font-family: "WarHeliosCondC","Arial Narrow",Arial,sans-serif;
+    font-stretch: normal;
+    font-size: 32px;
+    color: #fff;
+    font-weight: normal;
+    text-shadow: #000 0 1px 0;
+    margin: 4px 0 18px;
+}
+.b-header-h1__profile {
+    cursor: default;
+    margin-bottom: 0;
+    padding-bottom: 7px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#update_stats {
+    position: absolute;
+    left: 418px;
+    top: 0;
+    z-index: 5;
+}
+#authorize {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    white-space: nowrap;
+}
+.b-userblock-wrpr { margin: 0 0 37px 0; }
+.b-user-block {
+    background: #121315;
+    background: rgba(0,0,0,0.05);
+    border: 1px solid #222224;
+    border: 1px solid rgba(255,255,255,0.04);
+    box-shadow: 0 0 45px 1px rgba(0,0,0,0.15) inset, 0 0 23px 1px rgba(255,255,255,0.01), 0 0 5px 1px rgba(0,0,0,0.15) inset;
+    margin: 20px 0 20px 0;
+}
+.b-user-block__sparks {
+    background-image: url(../data/images/sparks.jpg);
+    background-position: 50% 0;
+    background-repeat: no-repeat;
+}
+.b-personal-data {
+    position: relative;
+    min-height: 189px;
+    padding: 0 18px 26px;
+}
+#random-link { left: 10px; }
+.b-personal-data > span.active { color: #f25322; }
+.b-personal-data > span {
+    position: absolute;
+    top: 10px;
+    font-size: 17px;
+    cursor: pointer;
+    display: none;
+}
+#ranked-link { left: 85px; }
+.t-personal-data { table-layout: fixed; width: 100%; }
+.t-personal-data th {
+    font-weight: bold;
+    line-height: 133%;
+    text-align: center;
+    word-wrap: break-word;
+}
+.t-personal-data_ico {
+    background: url(../data/images/speedometr-param.png) no-repeat 0 0;
+    padding: 82px 8px 3px;
+    vertical-align: middle;
+}
+.t-personal-data_ico__win { background-position: -162px 37px; }
+.t-personal-data_ico__fight { background-position: -12px 37px; }
+.t-personal-data_ico__exp { background-position: -312px 37px; }
+.t-personal-data_ico__dmg { background-position: -462px 37px; }
+.t-personal-data_pr {
+    background: url(../data/images/pr.png) no-repeat 50% 0;
+    padding-top: 130px;
+    vertical-align: top;
+    width: 166px;
+}
+.t-personal-data_rel { position: relative; }
+.t-personal-data_abs {
+    left: 0;
+    position: absolute;
+    right: 0;
+    text-align: center;
+    top: 0;
+}
+.t-personal-data_value {
+    color: #e0e0e0;
+    font: 22px/133% "WarHeliosCondCBold", "Arial Narrow", arial, sans-serif;
+    margin: 4px 0 0;
+}
+.t-personal-data_value__pr {
+    margin-top: -4px;
+    font-size: 30px;
+}
+.t-personal-data td {
+    text-align: center;
+    vertical-align: top;
+}
+/* main tab - другие игроки */
+#other_requests {
+    padding: 10px 20px 30px;
+}
+#other_requests > span {
+    font-size: 32px;
+    font-weight: bolder;
+    cursor: pointer;
+    color: #f25322;
+}
+#other_requests > table {
+    margin-top: 20px;
+}
+#other_requests > table th, #other_requests > table td {
+    padding: 10px;
+}
+#other_requests > table td > span {
+    cursor: pointer;
+    color: #3e6590;
+}
+
+/* tanks tab */
+.tree_head {
+    position: absolute;
+    top: 33px;
+    left: 27px;
+    font-size: 19px;
+}
+.treeWrapper {
+    position: relative;
+    width: 1612px;
+    height: 609px;
+    margin: 40px auto 0;
+    font-family: sans-serif;
+    font-size: 1em;
+}
+.levelLine {
+    z-index: -20;
+    position: absolute;
+    height: 620px;
+    width: 162px;
+    background: -moz-linear-gradient(top,  rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.04) 85%, rgba(255,255,255,0) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,0.04)), color-stop(85%,rgba(255,255,255,0.04)), color-stop(100%,rgba(255,255,255,0))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  rgba(255,255,255,0.04) 0%,rgba(255,255,255,0.04) 85%,rgba(255,255,255,0) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  rgba(255,255,255,0.04) 0%,rgba(255,255,255,0.04) 85%,rgba(255,255,255,0) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  rgba(255,255,255,0.04) 0%,rgba(255,255,255,0.04) 85%,rgba(255,255,255,0) 100%); /* IE10+ */
+    background: linear-gradient(to bottom,  rgba(255,255,255,0.04) 0%,rgba(255,255,255,0.04) 85%,rgba(255,255,255,0) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0affffff', endColorstr='#00ffffff',GradientType=0 ); /* IE6-9 */
+}
+#levels {
+    width: 1620px;
+    height: 10px;
+    margin-top: 10px;
+    color: #BEBEBE;
+    font-weight: bold;
+    font-family: Cambria, Arial;
+}
+#levels div {
+    width: 162px;
+    text-align: center;
+    float: left;
+}
+.tree {
+    position: relative;
+    margin-top: 15px;
 }
 .tblock {
     cursor: pointer;
@@ -144,71 +308,69 @@ li.active {
     text-align: right;
     white-space: nowrap;
 }
-.tblock .class {top: 1px; left: -5px;}
-.tblock .level {top: 1px; margin-left: 17px;}
-.tblock .golden {bottom: 0px; left: 3px;}
-.tblock .golden > img {width: 12px; height: 12px;}
-.tblock a {text-decoration: none;}
-.arrTB, .arrBT, .arrLR, .lineD, .lineU, .line2R, .lineRD,
-.lineRU, .arrLRD, .arrLRU {z-index: -1; position: absolute;}
-.arrTB {top: -39px; left: 60px;}
-.arrBT {top: 33px; left: 60px;}
-.arrLR {top: 13px; right: 127px;}
-.lineD, .line2R {top: 16px; left: 63px;}
-.lineU {bottom: 16px; left: 63px;}
-.lineRD {top: 16px; left: 144px;}
-.lineRU {bottom: 16px; left: 144px;}
-.arrLRD {right: 127px; bottom: 27px;}
-.arrLRU {right: 127px; top: 27px;}
-.levelLine {z-index: -20; position: absolute; height: 620px; width: 162px;
-    background: -moz-linear-gradient(top,  rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.04) 85%, rgba(255,255,255,0) 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,0.04)), color-stop(85%,rgba(255,255,255,0.04)), color-stop(100%,rgba(255,255,255,0))); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top,  rgba(255,255,255,0.04) 0%,rgba(255,255,255,0.04) 85%,rgba(255,255,255,0) 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top,  rgba(255,255,255,0.04) 0%,rgba(255,255,255,0.04) 85%,rgba(255,255,255,0) 100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top,  rgba(255,255,255,0.04) 0%,rgba(255,255,255,0.04) 85%,rgba(255,255,255,0) 100%); /* IE10+ */
-    background: linear-gradient(to bottom,  rgba(255,255,255,0.04) 0%,rgba(255,255,255,0.04) 85%,rgba(255,255,255,0) 100%); /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0affffff', endColorstr='#00ffffff',GradientType=0 ); /* IE6-9 */
+.tblock .class { top: 1px; left: -5px; }
+.tblock .level { top: 1px; margin-left: 17px; }
+.tblock .golden { bottom: 0px; left: 3px; }
+.tblock .golden > img { width: 12px; height: 12px; }
+.tblock a { text-decoration: none; }
+.arrTB, .arrBT, .arrLR, .lineD, .lineU, .line2R, .lineRD, .lineRU, .arrLRD, .arrLRU { z-index: -1; position: absolute; }
+.arrTB { top: -39px; left: 60px; }
+.arrBT { top: 33px; left: 60px; }
+.arrLR { top: 13px; right: 127px; }
+.lineD, .line2R { top: 16px; left: 63px; }
+.lineU { bottom: 16px; left: 63px; }
+.lineRD { top: 16px; left: 144px; }
+.lineRU { bottom: 16px; left: 144px; }
+.arrLRD { right: 127px; bottom: 27px; }
+.arrLRU { right: 127px; top: 27px; }
+.vicLogo { width: 116px; margin-left: 10px; overflow: hidden; }
+div.vicLogo.big { margin-left: 0; }
+div.vicLogo.big > img {
+    object-fit: cover;
+    display: block;
+    width: 80px;
+    height: 30px;
+    margin-top: 1px;
+    margin-left: 5px;
+    margin-bottom: 4px;
+    max-height: 31px!important;
 }
-.vicLogo {width: 116px; margin-left: 10px; overflow: hidden;}
-#levels {width: 1620px; height: 10px; margin-top: 10px;color: #BEBEBE; font-weight: bold; font-family: Cambria, Arial;}
-#levels div {width: 162px; text-align: center; float: left; }
-.root {position: absolute; top: 243px;}
-.row1 {top: 0px;}
-.row2 {top: 54px;}
-.row3 {top: 108px;}
-.row4 {top: 162px;}
-.row5 {top: 216px;}
-.row6 {top: 270px;}
-.row7 {top: 324px;}
-.row8 {top: 378px;}
-.row9 {top: 432px;}
-.row10 {top: 486px;}
-.row11 {top: 540px;}
-.row12 {top: 594px;}
-.row13 {top: 648px;}
-.row14 {top: 702px;}
-.row15 {top: 756px;}
-.row16 {top: 810px;}
-.row17 {top: 864px;}
-.row18 {top: 918px;}
-.row19 {top: 972px;}
-.row20 {top: 1026px;}
-.row21 {top: 1080px;}
-.row22 {top: 1134px;}
-.row23 {top: 1188px;}
-.row24 {top: 1242px;}
-.row25 {top: 1296px;}
-.column1 {position: absolute; left: 0px;}
-.column2 {position: absolute; left: 162px;}
-.column3 {position: absolute; left: 324px;}
-.column4 {position: absolute; left: 486px;}
-.column5 {position: absolute; left: 648px;}
-.column6 {position: absolute; left: 810px;}
-.column7 {position: absolute; left: 972px;}
-.column8 {position: absolute; left: 1134px;}
-.column9 {position: absolute; left: 1296px;}
-.column10 {position: absolute; left: 1458px;}
-.column11 {position: absolute; left: 1620px;}
+.row1 { top: 0px; }
+.row2 { top: 54px; }
+.row3 { top: 108px; }
+.row4 { top: 162px; }
+.row5 { top: 216px; }
+.row6 { top: 270px; }
+.row7 { top: 324px; }
+.row8 { top: 378px; }
+.row9 { top: 432px; }
+.row10 { top: 486px; }
+.row11 { top: 540px; }
+.row12 { top: 594px; }
+.row13 { top: 648px; }
+.row14 { top: 702px; }
+.row15 { top: 756px; }
+.row16 { top: 810px; }
+.row17 { top: 864px; }
+.row18 { top: 918px; }
+.row19 { top: 972px; }
+.row20 { top: 1026px; }
+.row21 { top: 1080px; }
+.row22 { top: 1134px; }
+.row23 { top: 1188px; }
+.row24 { top: 1242px; }
+.row25 { top: 1296px; }
+.column1 { position: absolute; left: 0px; }
+.column2 { position: absolute; left: 162px; }
+.column3 { position: absolute; left: 324px; }
+.column4 { position: absolute; left: 486px; }
+.column5 { position: absolute; left: 648px; }
+.column6 { position: absolute; left: 810px; }
+.column7 { position: absolute; left: 972px; }
+.column8 { position: absolute; left: 1134px; }
+.column9 { position: absolute; left: 1296px; }
+.column10 { position: absolute; left: 1458px; }
+.column11 { position: absolute; left: 1620px; }
 .gamerbattles {
     background: rgba(53, 53, 44, 0.7);
     font-size: 8px;
@@ -241,10 +403,14 @@ li.active {
     display: none;
     z-index: 190;
 }
-.mastery {
-    right: 0;
-    top: -12px;
+.regularTank {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    background-color: rgba(0, 0, 0, 0.5);
 }
+.mastery { right: 0; top: -12px; }
 .marksOnGun1, .marksOnGun2, .marksOnGun3 {
     position: absolute;
     height: 11px;
@@ -255,38 +421,28 @@ li.active {
     right: 3px;
     top: 7px;
 }
-.marksOnGun1 {
-    background-position: 0 0;
-}
-.marksOnGun2 {
-    background-position: 0 -12px;
-}
-.marksOnGun3 {
-    background-position: 0 -24px;
-}
-.pointer { cursor: pointer; margin-left: 20px; }
-.in_angar {
-    border: 1px solid green;
-}
-.in_angar > span.mark {
-    color: green!important;
-}
-/*div.in_angar { border: 1px solid yellow; }*/
-#hangar { z-index: 100; }
-.vicLogo img { max-height: 31px!important; }
+.marksOnGun1 { background-position: 0 0; }
+.marksOnGun2 { background-position: 0 -12px; }
+.marksOnGun3 { background-position: 0 -24px; }
 span.percent { position: relative; }
-.tree_head {
-    position: absolute;
-    top: 33px;
-    left: 27px;
-    font-size: 19px;
+.in_angar { border: 1px solid green; }
+.in_angar > span.mark { color: green!important; }
+#hangar { z-index: 100; }
+#angar > .tblock > img {
+    display: none;
 }
-#update_stats {
-    position: absolute;
-    top: 32px;
-    left: 625px;
-    z-index: 5;
-}
+
+/* common styles */
+.clear { clear: both; }
+.pointer { cursor: pointer; margin-left: 20px; }
+.hidden { display: none; }
+.red { color: #f11919; }
+.orange { color: #fa6800; }
+.yellow { color: #c6bf1f; }
+.green { color: #4A9C02; }
+.teal { color: #25c2dd; }
+.violet { color: #c64cff; }
+/* buttons */
 .button {
     cursor: pointer;
     font-size: 20px;
@@ -316,7 +472,6 @@ span.percent { position: relative; }
     background: -ms-linear-gradient(90deg, rgb(118, 28, 255) 30%, rgb(203, 135, 255) 70%);
     background: linear-gradient(0deg, rgb(118, 28, 255) 30%, rgb(203, 135, 255) 70%);
 }
-
 .button.red {
     color: #ffd700;
     background: rgb(174, 2, 0);
@@ -336,17 +491,4 @@ span.percent { position: relative; }
     background: -o-linear-gradient(90deg, rgb(118, 28, 255) 30%, rgb(203, 135, 255) 70%);
     background: -ms-linear-gradient(90deg, rgb(118, 28, 255) 30%, rgb(203, 135, 255) 70%);
     background: linear-gradient(0deg, rgb(118, 28, 255) 30%, rgb(203, 135, 255) 70%);
-}
-.l-content input[type='submit'].blue {
-    float: left;
-    margin-right: 10px;
-    margin-bottom: 5px;
-}
-.clear {
-    clear: both;
-}
-#update_stats {
-    position: absolute;
-    left: 418px;
-    top: 0;
 }

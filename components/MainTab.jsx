@@ -43,7 +43,6 @@ export class MainTab extends React.Component {
           </div>
 
           <div className='b-userblock-wrpr'>
-            <div id='js-glory-points-block'></div>
             <div className='b-user-block b-user-block__sparks'>
               <div className='b-personal-data'>
                 <span id="random-link" className={ (activeTab === 'random') ? 'active' : '' } onClick={ () => this.setTab('random') }>Random</span>
