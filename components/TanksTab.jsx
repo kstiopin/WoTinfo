@@ -3,10 +3,26 @@ import React from 'react';
 import Tank from './Tank.jsx';
 
 export class TanksTab extends React.Component {
-  render() {
-    const { activeTab, userData, tanksData, tanksWN8 } = this.props;
-    const { account_id, nickname } = userData;
+  state = { activeNation: 'ussr' }
 
+  setNation = (activeNation) => this.setState({ activeNation })
+
+  render() {
+    const { tanksData, tanksWN8, userData } = this.props;
+    const { activeNation } = this.state;
+
+    const nations = [
+      { key: 'ussr', label: 'СССР'},
+      { key: 'germany', label: 'Германия'},
+      { key: 'usa', label: 'США'},
+      { key: 'france', label: 'Франция'},
+      { key: 'uk', label: 'Великобритания'},
+      { key: 'china', label: 'Китай'},
+      { key: 'japan', label: 'Япония'},
+      { key: 'czech', label: 'Чехия'},
+      { key: 'poland', label: 'Польша'},
+      { key: 'sweden', label: 'Швеция'}
+    ];
     const tanksToAdd = [];
     const maxRows = {};
     Object.keys(tanksData).forEach(key => {
@@ -14,9 +30,9 @@ export class TanksTab extends React.Component {
       const { id, nation, level, row } = tank,
         userTankData = userData.tankData[id];
 
-      if ((nation === activeTab) || ((activeTab === 'angar') && userTankData && tank.in_angar && (userTankData.all.battles > 0))) {
+      if ((nation === activeNation) || ((activeNation === 'angar') && userTankData && tank.in_angar && (userTankData.all.battles > 0))) {
         const addData = { userTankData: userData.tankData[id] };
-        if (activeTab === 'angar') {
+        if (activeNation === 'angar') {
           if (!maxRows.hasOwnProperty(level)) {
             maxRows[level] = 1;
           }
@@ -37,6 +53,9 @@ export class TanksTab extends React.Component {
     });
 
     return (<div>
+      <div id='nations'>{ nations.map(nation =>
+        <div className={ `${nation.key}${(nation.key === activeNation) ? ' active' : ''}` } key={ nation.key } onClick={ () => this.setNation(nation.key) } title={ nation.label }></div>
+      )}</div>
       <div className='nationTree' id='ntree'>
         <div className='treeWrapper'>
           <div className='levelLine' style={ { left: '0' } }></div>
@@ -46,7 +65,7 @@ export class TanksTab extends React.Component {
           <div className='levelLine' style={ { left: '1296px' } }></div>
           <div id='levels'><div>I</div><div>II</div><div>III</div><div>IV</div><div>V</div><div>VI</div><div>VII</div><div>VIII</div><div>IX</div><div>X</div></div>
           <div className='tree'>
-            { tanksToAdd.map(tank => <Tank key={ tank.id } activeTab={ activeTab } tank={ tank } tankWN8={ tanksWN8[tank.id] } />) }
+            { tanksToAdd.map(tank => <Tank key={ tank.id } activeNation={ activeNation } tank={ tank } tankWN8={ tanksWN8[tank.id] } />) }
           </div>
         </div>
       </div>

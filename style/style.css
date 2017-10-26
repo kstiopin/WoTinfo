@@ -70,7 +70,7 @@ li.active {
 
 /* main tab */
 #main {
-    background-image: url('../data/images/ui-bg-tile.jpg');
+    background-image: url('./ui-bg-tile.jpg');
     background-attachment: scroll;
     -webkit-background-size: 100%;
     background-size: 100%;
@@ -142,7 +142,7 @@ li.active {
     margin: 20px 0 20px 0;
 }
 .b-user-block__sparks {
-    background-image: url(../data/images/sparks.jpg);
+    background-image: url(./sparks.jpg);
     background-position: 50% 0;
     background-repeat: no-repeat;
 }
@@ -169,7 +169,7 @@ li.active {
     word-wrap: break-word;
 }
 .t-personal-data_ico {
-    background: url(../data/images/speedometr-param.png) no-repeat 0 0;
+    background: url(./speedometr-param.png) no-repeat 0 0;
     padding: 82px 8px 3px;
     vertical-align: middle;
 }
@@ -178,7 +178,7 @@ li.active {
 .t-personal-data_ico__exp { background-position: -312px 37px; }
 .t-personal-data_ico__dmg { background-position: -462px 37px; }
 .t-personal-data_pr {
-    background: url(../data/images/pr.png) no-repeat 50% 0;
+    background: url(./pr.png) no-repeat 50% 0;
     padding-top: 130px;
     vertical-align: top;
     width: 166px;
@@ -217,6 +217,43 @@ li.active {
 #other_requests > table td > span { cursor: pointer; color: #3e6590; }
 
 /* tanks tab */
+#nations {
+    position: fixed;
+    padding-top: 50px;
+    border-right: 1px solid #BEBEBE;
+    background-color: #171719;
+    width: 50px;
+    height: 100%;
+    z-index: 900;
+    top: 0;
+    left: 0;
+}
+#nations > div {
+    cursor: pointer;
+    width: 50px;
+    height: 50px;
+    background-position: center;
+    -webkit-background-size: 75%;
+    background-size: 75%;
+    background-repeat: no-repeat;
+    -moz-filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale");
+    -o-filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale");
+    -webkit-filter: grayscale(100%);
+    filter: gray;
+}
+#nations > div.ussr { background-image: url('./flag_ussr.png'); }
+#nations > div.germany { background-image: url('./flag_germany.png'); }
+#nations > div.usa { background-image: url('./flag_usa.png'); }
+#nations > div.france { background-image: url('./flag_france.png'); }
+#nations > div.uk { background-image: url('./flag_uk.png'); }
+#nations > div.china { background-image: url('./flag_china.png'); }
+#nations > div.japan { background-image: url('./flag_japan.png'); }
+#nations > div.czech { background-image: url('./flag_czech.png'); }
+#nations > div.poland { background-image: url('./flag_poland.png'); }
+#nations > div.sweden { background-image: url('./flag_sweden.png'); }
+#nations > div:hover { -webkit-background-size: 90%; background-size: 90%; }
+#nations > div:hover, #nations > div.active { -moz-filter: none; -o-filter: none; -webkit-filter: none; filter: none; }
+#ntree { padding-left: 100px; }
 .treeWrapper {
     position: relative;
     width: 1612px;
@@ -404,7 +441,7 @@ div.vicLogo.big > img {
     position: absolute;
     height: 11px;
     width: 38px;
-    background-image: url('../data/images/marks.png');
+    background-image: url('./marks.png');
     background-size: 100%;
     background-repeat: no-repeat;
     right: 3px;

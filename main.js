@@ -27,7 +27,7 @@ class App extends React.Component {
   }
 
   /**
-   * Load data for an account / this should be a saga
+   * Load data for an account
    * @param account {int|string} if not account_id, will try search by name
    */
   getAccData = (account) => {
@@ -172,23 +172,17 @@ class App extends React.Component {
 
   render() {
     const { activeTab, accountsData, userData, tanksData, playerTanks, tanksWN8 } = this.state;
+    if (!userData) {
+      return null;
+    }
 
-    return (<div>
-      { userData && <TopPanel
-        activeTab={ activeTab }
-        playerTanks={ playerTanks }
-        setActiveTab={ this.setActiveTab } /> }
-      { (activeTab === 'main') && userData && <MainTab
-        userData={ userData }
-        accounts={ accountsData }
-        getUser={ this.getAccData }
-        sortAccounts={ this.sortAccounts } /> }
-      { (activeTab !== 'main') && userData && <TanksTab
-        activeTab={ activeTab }
-        userData={ userData }
-        tanksData={ tanksData }
-        tanksWN8={ tanksWN8 } /> }
-    </div>);
+    return (
+      <div>
+        <TopPanel activeTab={ activeTab } playerTanks={ playerTanks } setActiveTab={ this.setActiveTab } />
+        { (activeTab === 'main')
+          ? <MainTab accounts={ accountsData } getUser={ this.getAccData } sortAccounts={ this.sortAccounts } userData={ userData } />
+          : <TanksTab activeTab={ activeTab } tanksData={ tanksData } tanksWN8={ tanksWN8 } userData={ userData } /> }
+      </div>);
   }
 }
 

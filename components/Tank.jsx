@@ -64,8 +64,8 @@ export class Tank extends React.Component {
       <span className="mark">{ (short_name.length <= name.length) ? short_name : name }</span>
       <span className="level">{ level }</span>
       <span className="class">{ getTankTypeImg(type) }</span>
-      { (is_premium == 1) && <span className="golden"><img src="../data/images/gold.png" /></span> }
-      { hasUserData && (userTankData.mark_of_mastery > 0) && <span className="mastery"><img src={ `../data/images/class${userTankData.mark_of_mastery}.png` } /></span> }
+      { (is_premium == 1) && <span className="golden"><img src="../style/gold.png" /></span> }
+      { hasUserData && (userTankData.mark_of_mastery > 0) && <span className="mastery"><img src={ `../style/class${userTankData.mark_of_mastery}.png` } /></span> }
       { hasUserData && !!userTankData.marksOnGun && <div className={ `marksOnGun${userTankData.marksOnGun}` }></div> }
       { hasUserData && <div className="gamerbattles">
         боёв <span className={ `ratings ${getColor('winrate', tankWinrate)}` }>{ battles }({ tankWinrate.toFixed(0) }%)</span>
@@ -73,7 +73,7 @@ export class Tank extends React.Component {
         dmg <span className={ `ratings ${getColor('tankDmg', avgDmg / expDmg)}` } title={ `Expected: ${expDmg.toFixed(0)}` }>{ avgDmg.toFixed(0) }</span>
       </div> }
       { !hasUserData && <span className='regularTank'></span> }
-      { relationsArray.map((relation, key) => <img key={ key} className={ relation.class } src={ `../data/images/${relation.img}` } width={ relation.width } height={ relation.height } />) }
+      { relationsArray.map((relation, key) => <img key={ key} className={ relation.class } src={ `../style/${relation.img}` } width={ relation.width } height={ relation.height } />) }
     </div>);
   }
 }
