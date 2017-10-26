@@ -22,9 +22,9 @@ export class TopPanel extends React.Component {
     // console.log('TopPanel RENDER', activeTab, playerTanks);
 
     return (<div id='content'>
-      <ul id='nations'>
-        { tabsData.map((tab) => (<li key={ tab.key } className={ (tab.key === activeTab) ? 'active' : 'click' } onClick={ () => setActiveTab(tab.key) }>{ tab.label }</li>)) }
-      </ul>
+      <ul id='navigation'>{ tabsData.map((tab) =>
+        <li key={ tab.key } className={ (tab.key === activeTab) ? 'active' : 'click' } onClick={ () => setActiveTab(tab.key) }>{ tab.label }</li>
+      ) }</ul>
     </div>);
   }
 }

@@ -35,6 +35,10 @@ export class MainTab extends React.Component {
             <a href='http://vk.com/wotleaks' target='_blank'>Wot leaks</a>,&nbsp;
             <a href='https://wgmods.net/WOT/ru/' target='_blank'>Модпаки</a>,&nbsp;
             <a href='http://modxvm.com' target='_blank'>ModXVM</a>
+            <br/>
+            <a href={ `http://www.noobmeter.com/player/ru/${nickname.toLowerCase()}/${account_id}/` }>Noobmeter</a>,&nbsp;
+            <a href={ `http://wots.com.ua/user/stats/${nickname.toLowerCase()}` }>WOTS</a>,&nbsp;
+            <a href={ `https://kttc.ru/wot/ru/user/${nickname.toLowerCase()}/` }>KTTC</a>,&nbsp;
             <div id='update_stats'>
               <input type='text' id='acc_input' name='acc' ref={ (input) => { this.accInput = input; } }/>
               <input type='button' className='button red' value='Найти игрока' onClick={ () => getUser(this.accInput.value) } />
