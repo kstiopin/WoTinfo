@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import TopPanel from './components/TopPanel.jsx';
-import MainTab from './components/MainTab.jsx';
 import TanksTab from './components/TanksTab.jsx';
+import TopPanel from './components/TopPanel.jsx';
+import Links from './components/Links.jsx';
+import MainTab from './components/MainTab.jsx';
 
 import { calcWN8 } from './helpers';
 
@@ -23,7 +24,6 @@ class App extends React.Component {
     const { accountId } = this.props;
     console.log(`request acc data for ${accountId}`);
     this.getAccData(accountId);
-    this.getAccounts();
   }
 
   /**
@@ -168,10 +168,17 @@ class App extends React.Component {
     });
   }
 
+  /**
+   * Get links from the DB
+   */
+  getLinks = () => {
+    fetch('../api/links.php', fetchHeaders).then(resp => resp.json()).then(links => this.setState({ links }));
+  }
+
   setActiveTab = (activeTab) => this.setState({ activeTab })
 
   render() {
-    const { activeTab, accountsData, userData, tanksData, playerTanks, tanksWN8 } = this.state;
+    const { accountsData, activeTab, links, playerTanks, tanksData, tanksWN8, userData } = this.state;
     if (!userData) {
       return null;
     }
@@ -179,9 +186,9 @@ class App extends React.Component {
     return (
       <div>
         <TopPanel activeTab={ activeTab } playerTanks={ playerTanks } setActiveTab={ this.setActiveTab } />
-        { (activeTab === 'main')
-          ? <MainTab accounts={ accountsData } getUser={ this.getAccData } sortAccounts={ this.sortAccounts } userData={ userData } />
-          : <TanksTab activeTab={ activeTab } tanksData={ tanksData } tanksWN8={ tanksWN8 } userData={ userData } /> }
+        { (activeTab === 'main') && <MainTab accounts={ accountsData } getAccounts={ this.getAccounts } getUser={ this.getAccData } sortAccounts={ this.sortAccounts } userData={ userData } /> }
+        { (activeTab === 'tanks') && <TanksTab activeTab={ activeTab } tanksData={ tanksData } tanksWN8={ tanksWN8 } userData={ userData } /> }
+        { (activeTab === 'links') && <Links getLinks={ this.getLinks } links={ links } userData={ userData } /> }
       </div>);
   }
 }

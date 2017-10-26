@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { Component } from 'react';
 
 import Tank from './Tank.jsx';
 
-export class TanksTab extends React.Component {
+export class TanksTab extends Component {
   state = { activeNation: 'ussr' }
 
   setNation = (activeNation) => this.setState({ activeNation })
@@ -52,24 +52,25 @@ export class TanksTab extends React.Component {
       }
     });
 
-    return (<div>
-      <div id='nations'>{ nations.map(nation =>
-        <div className={ `${nation.key}${(nation.key === activeNation) ? ' active' : ''}` } key={ nation.key } onClick={ () => this.setNation(nation.key) } title={ nation.label }></div>
-      )}</div>
-      <div className='nationTree' id='ntree'>
-        <div className='treeWrapper'>
-          <div className='levelLine' style={ { left: '0' } }></div>
-          <div className='levelLine' style={ { left: '324px' } }></div>
-          <div className='levelLine' style={ { left: '648px' } }></div>
-          <div className='levelLine' style={ { left: '972px' } }></div>
-          <div className='levelLine' style={ { left: '1296px' } }></div>
-          <div id='levels'><div>I</div><div>II</div><div>III</div><div>IV</div><div>V</div><div>VI</div><div>VII</div><div>VIII</div><div>IX</div><div>X</div></div>
-          <div className='tree'>
-            { tanksToAdd.map(tank => <Tank key={ tank.id } activeNation={ activeNation } tank={ tank } tankWN8={ tanksWN8[tank.id] } />) }
+    return (
+      <div>
+        <div id='nations'>{ nations.map(nation =>
+          <div className={ `${nation.key}${(nation.key === activeNation) ? ' active' : ''}` } key={ nation.key } onClick={ () => this.setNation(nation.key) } title={ nation.label }></div>
+        )}</div>
+        <div className='nationTree' id='ntree'>
+          <div className='treeWrapper'>
+            <div className='levelLine' style={ { left: '0' } }></div>
+            <div className='levelLine' style={ { left: '324px' } }></div>
+            <div className='levelLine' style={ { left: '648px' } }></div>
+            <div className='levelLine' style={ { left: '972px' } }></div>
+            <div className='levelLine' style={ { left: '1296px' } }></div>
+            <div id='levels'><div>I</div><div>II</div><div>III</div><div>IV</div><div>V</div><div>VI</div><div>VII</div><div>VIII</div><div>IX</div><div>X</div></div>
+            <div className='tree'>
+              { tanksToAdd.map(tank => <Tank key={ tank.id } activeNation={ activeNation } tank={ tank } tankWN8={ tanksWN8[tank.id] } />) }
+            </div>
           </div>
         </div>
-      </div>
-    </div>);
+      </div>);
   }
 }
 
