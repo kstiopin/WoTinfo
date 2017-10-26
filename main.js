@@ -10,16 +10,13 @@ import { calcWN8 } from './helpers';
 import { accountId, accessToken, apiUrl, applicationId, fetchHeaders } from './config/config';
 
 class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      activeTab: 'main',
-      playerTanks: 0,
-      userData: false,
-      accountsData: [],
-      tanksData: false,
-      tanksWN8: [],
-    };
+  state = {
+    activeTab: 'main',
+    playerTanks: 0,
+    userData: false,
+    accountsData: [],
+    tanksData: false,
+    tanksWN8: [],
   }
 
   componentWillMount() {
@@ -166,8 +163,8 @@ class App extends React.Component {
     Object.keys(data).forEach((key) => {
       params.append(key, data[key]);
     });
-    fetch('../api/accounts.php', { method: 'POST', body: params }).then((resp) => {
-      console.log(`account ${resp} updated`);
+    fetch('../api/accounts.php', { method: 'POST', body: params }).then(resp => resp.json()).then(data => {
+      console.log(`account ${data} updated`);
     });
   }
 

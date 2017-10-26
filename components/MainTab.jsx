@@ -5,10 +5,7 @@ import { getColor } from '../helpers';
 import { apiUrl, applicationId, defaultStatsTab } from '../config/config';
 
 export class MainTab extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { showAccounts: false, activeTab: defaultStatsTab };
-  }
+  state = { showAccounts: false, activeTab: defaultStatsTab }
 
   toggleAccounts = () => this.setState(prevState => ({ showAccounts: !prevState.showAccounts }))
 
@@ -36,6 +33,7 @@ export class MainTab extends React.Component {
             <a href='http://worldoftanks.ru/' target='_blank'>сайт WoT</a>,&nbsp;
             <a href='http://knowly.ru/asja' target='_blank'>Ася шарит</a>,&nbsp;
             <a href='http://vk.com/wotleaks' target='_blank'>Wot leaks</a>,&nbsp;
+            <a href='https://wgmods.net/WOT/ru/' target='_blank'>Модпаки</a>,&nbsp;
             <a href='http://modxvm.com' target='_blank'>ModXVM</a>
             <div id='update_stats'>
               <input type='text' id='acc_input' name='acc' ref={ (input) => { this.accInput = input; } }/>
