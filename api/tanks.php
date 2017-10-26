@@ -16,9 +16,11 @@ if (isset($_GET['account_id'])) {
 } else {
     /** GET THE TANKS DATA FROM THE BE **/
     $_SESSION['tanks'] = [];
+    $tankNames = [];
     $r = mysql_query("SELECT * FROM wiki_tanks") or die(mysql_error());
     while ($f = mysql_fetch_assoc($r)) {
         $_SESSION['tanks'][] = $f;
+        $tankNames[$f['id']] = $f['short_name'];
     }
     /** GET THE WN8 DATA **/
     $ch = curl_init();
@@ -39,27 +41,27 @@ if (isset($_GET['account_id'])) {
     while ($f = mysql_fetch_assoc($r)) {
         if ($f['type'] === '=') {
             $result['wn8'][$f['target']] = $result['wn8'][$f['source']];
-            $msg = "Pz.Kpfw. VII from VK 72.01 K"; // TODO: get tank names from $_SESSION['tanks']
+            $msg = $tankNames[$f['target']]." from ".$tankNames[$f['source']];
         } else if ($f['type'] === 'avg') {
-            $result['wn8'][] = [
-                'expFrag' => ($result['wn8'][$f['previous']]->expFrag + $result['wn8'][$f['next']]->expFrag) / 2,
-                'expDamage' => ($result['wn8'][$f['previous']]->expDamage + $result['wn8'][$f['next']]->expDamage) / 2,
-                'expSpot' => ($result['wn8'][$f['previous']]->expSpot + $result['wn8'][$f['next']]->expSpot) / 2,
-                'expDef' => ($result['wn8'][$f['previous']]->expDef + $result['wn8'][$f['next']]->expDef) / 2,
-                'expWinRate' => ($result['wn8'][$f['previous']]->expWinRate + $result['wn8'][$f['next']]->expWinRate) / 2,
+            $result['wn8'][$f['target']] = [
+                'expFrag' => ($result['wn8'][$f['prev']]['expFrag'] + $result['wn8'][$f['next']]['expFrag']) / 2,
+                'expDamage' => ($result['wn8'][$f['prev']]['expDamage'] + $result['wn8'][$f['next']]['expDamage']) / 2,
+                'expSpot' => ($result['wn8'][$f['prev']]['expSpot'] + $result['wn8'][$f['next']]['expSpot']) / 2,
+                'expDef' => ($result['wn8'][$f['prev']]['expDef'] + $result['wn8'][$f['next']]['expDef']) / 2,
+                'expWinRate' => ($result['wn8'][$f['prev']]['expWinRate'] + $result['wn8'][$f['next']]['expWinRate']) / 2,
             ];
-            $msg = "B-C 12 t from avg between AMX 13 75 and AMX 13 90"; // TODO: get tank names from $_SESSION['tanks']
+            $msg = $tankNames[$f['target']]." from avg between ".$tankNames[$f['prev']]." and ".$tankNames[$f['next']];
         } else if ($f['type'] === 'diff') {
-            $result['wn8'][] = [
-                'expFrag' => $result['wn8'][$f['next']]->expFrag * $result['wn8'][$f['next']]->expFrag / $result['wn8'][$f['previous']]->expFrag,
-                'expDamage' => $result['wn8'][$f['next']]->expDamage * $result['wn8'][$f['next']]->expDamage / $result['wn8'][$f['previous']]->expDamage,
-                'expSpot' => $result['wn8'][$f['next']]->expSpot * $result['wn8'][$f['next']]->expSpot / $result['wn8'][$f['previous']]->expSpot,
-                'expDef' => $result['wn8'][$f['next']]->expDef * $result['wn8'][$f['next']]->expDef / $result['wn8'][$f['previous']]->expDef,
-                'expWinRate' => $result['wn8'][$f['next']]->expWinRate * $result['wn8'][$f['next']]->expWinRate / $result['wn8'][$f['previous']]->expWinRate,
+            $result['wn8'][$f['target']] = [
+                'expFrag' => $result['wn8'][$f['next']]['expFrag'] * $result['wn8'][$f['next']]['expFrag'] / $result['wn8'][$f['prev']]['expFrag'],
+                'expDamage' => $result['wn8'][$f['next']]['expDamage'] * $result['wn8'][$f['next']]['expDamage'] / $result['wn8'][$f['prev']]['expDamage'],
+                'expSpot' => $result['wn8'][$f['next']]['expSpot'] * $result['wn8'][$f['next']]['expSpot'] / $result['wn8'][$f['prev']]['expSpot'],
+                'expDef' => $result['wn8'][$f['next']]['expDef'] * $result['wn8'][$f['next']]['expDef'] / $result['wn8'][$f['prev']]['expDef'],
+                'expWinRate' => $result['wn8'][$f['next']]['expWinRate'] * $result['wn8'][$f['next']]['expWinRate'] / $result['wn8'][$f['prev']]['expWinRate'],
             ];
-            $msg = "AMX 13 105 based on difference between B-C 12 t and AMX 13 90"; // TODO: get tank names from $_SESSION['tanks']
+            $msg = $tankNames[$f['target']]." based on difference between ".$tankNames[$f['prev']]." and ".$tankNames[$f['next']];
         }
-        $result['log'][$f['target']] = ["added wn8 data for ".$msg, $result['wn8'][$f['target']]];
+        $result['log'][$f['target']] = ["added wn8 data (".$f['type'].") for ".$msg, $result['wn8'][$f['target']]];
     }
     $result['tanks'] = $_SESSION['tanks']; // TODO: use this on the FE so that we don't load this data twice
 }
