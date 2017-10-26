@@ -23,13 +23,10 @@ class App extends React.Component {
   }
 
   componentWillMount() {
-    fetch('../api/tanks.php', fetchHeaders).then(resp => resp.json()).then(data => {
-      this.setState({ tanksData: data.tanks, tanksWN8: data.wn8 });
-      const { accountId } = this.props;
-      console.log(`request acc data for ${accountId}`);
-      this.getAccData(accountId);
-      this.getAccounts();
-    });
+    const { accountId } = this.props;
+    console.log(`request acc data for ${accountId}`);
+    this.getAccData(accountId);
+    this.getAccounts();
   }
 
   /**
@@ -55,7 +52,8 @@ class App extends React.Component {
             // Get tanks data for trees and wn8 rating from http://stat.modxvm.com/wn8.json
             fetch(`../api/tanks.php?account_id=${account}`, fetchHeaders).then(resp => resp.json()).then(resp => {
               console.log('fetch api/tanks', account, resp);
-              const { tanksWN8 } = this.state;
+              const tanksData = resp.tanks;
+              const tanksWN8 = resp.wn8;
               let playerTanks = 0;
               const { statistics, tankData, account_id, nickname, global_rating } = userData,
                 { battles, wins, damage_dealt, frags, spotted, dropped_capture_points } = statistics.all,
@@ -98,7 +96,7 @@ class App extends React.Component {
               // обновление данных по аккаунту в базе
               this.fillAccountData({ account_id, nickname, battles, winrate, wg: global_rating, wn8, angar });
 
-              this.setState({ userData, playerTanks: (playerTanks > 0) ? playerTanks : resp.angarTanks });
+              this.setState({ userData, playerTanks: (playerTanks > 0) ? playerTanks : resp.angarTanks, tanksData, tanksWN8 });
             });
           });
         });
