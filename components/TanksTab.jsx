@@ -5,12 +5,27 @@ import Tank from './Tank.jsx';
 export class TanksTab extends Component {
   state = { activeNation: 'ussr' }
 
+  componentWillMount() {
+    const { playerTanks } = this.props;
+    if (playerTanks > 0) {
+      this.setState({ activeNation: 'angar' });
+    }
+  }
+
   setNation = (activeNation) => this.setState({ activeNation })
 
+  sortByDamage = (tanksArray) => tanksArray.sort((tankA, tankB) => {
+    const tankAavgDmg = tankA.userTankData.all.damage_dealt / tankA.userTankData.all.battles;
+    const tankBavgDmg = tankB.userTankData.all.damage_dealt / tankB.userTankData.all.battles;
+
+    return (tankAavgDmg > tankBavgDmg) ? -1 : ((tankAavgDmg < tankBavgDmg) ? 1 : 0);
+  })
+
   render() {
-    const { tanksData, tanksWN8, userData } = this.props;
+    const { tanksData,  playerTanks, tanksWN8, userData } = this.props;
     const { activeNation } = this.state;
 
+    const levels = { 10: 'X', 9: 'IX', 8: 'VIII', 7: 'VII', 6: 'VI', 5: 'V', 4: 'IV', 3: 'III', 2: 'II', 1: 'I' };
     const nations = [
       { key: 'ussr', label: 'СССР'},
       { key: 'germany', label: 'Германия'},
@@ -23,7 +38,8 @@ export class TanksTab extends Component {
       { key: 'poland', label: 'Польша'},
       { key: 'sweden', label: 'Швеция'}
     ];
-    const tanksToAdd = [];
+    let tanksToAdd = [];
+    const angarTanks = {};
     const maxRows = {};
     Object.keys(tanksData).forEach(key => {
       const tank = tanksData[key];
@@ -51,25 +67,45 @@ export class TanksTab extends Component {
         }
       }
     });
+    if (activeNation === 'angar') {
+      tanksToAdd.forEach(tank => {
+        if (!angarTanks.hasOwnProperty(tank.level)) {
+          angarTanks[tank.level] = [];
+        }
+        angarTanks[tank.level].push(tank);
+      });
+      // console.log('Browsing angar, tanks: ', angarTanks);
+      tanksToAdd = [];
+    }
 
     return (
-      <div>
-        <div id='nations'>{ nations.map(nation =>
-          <div className={ `${nation.key}${(nation.key === activeNation) ? ' active' : ''}` } key={ nation.key } onClick={ () => this.setNation(nation.key) } title={ nation.label }></div>
-        )}</div>
-        <div className='nationTree' id='ntree'>
+      <div id={ (activeNation === 'angar') ? 'tanksWrapper' : '' }>
+        <div id='nations'>
+          { (playerTanks > 0) && <div className={ `angar${(activeNation === 'angar') ? ' active' : ''}` } onClick={ () => this.setNation('angar') } title={ 'Ангар' }></div> }
+          { nations.map(nation => <div className={ `${nation.key}${(nation.key === activeNation) ? ' active' : ''}` } key={ nation.key } onClick={ () => this.setNation(nation.key) } title={ nation.label }></div>) }
+        </div>
+        { (activeNation === 'angar') ? <div id='angar'>
+          { Object.keys(levels).reverse().map(level => angarTanks.hasOwnProperty(level) && <div key={ level } className='levelRow'>
+            <h3>{ levels[level] }</h3>
+            <div className='tanks'>
+              { this.sortByDamage(angarTanks[level]).map(tank => <Tank key={ tank.id } activeNation={ activeNation } tank={ tank } tankWN8={ tanksWN8[tank.id] } />) }
+            </div>
+          </div> ) }
+        </div> : <div className='nationTree' id='ntree'>
           <div className='treeWrapper'>
             <div className='levelLine' style={ { left: '0' } }></div>
             <div className='levelLine' style={ { left: '324px' } }></div>
             <div className='levelLine' style={ { left: '648px' } }></div>
             <div className='levelLine' style={ { left: '972px' } }></div>
             <div className='levelLine' style={ { left: '1296px' } }></div>
-            <div id='levels'><div>I</div><div>II</div><div>III</div><div>IV</div><div>V</div><div>VI</div><div>VII</div><div>VIII</div><div>IX</div><div>X</div></div>
+            <div id='levels'>
+              { Object.keys(levels).map(level => <div key={ level }>{ levels[level] }</div>) }
+            </div>
             <div className='tree'>
               { tanksToAdd.map(tank => <Tank key={ tank.id } activeNation={ activeNation } tank={ tank } tankWN8={ tanksWN8[tank.id] } />) }
             </div>
           </div>
-        </div>
+        </div> }
       </div>);
   }
 }

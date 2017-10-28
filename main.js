@@ -187,7 +187,7 @@ class App extends React.Component {
       <div>
         <TopPanel activeTab={ activeTab } playerTanks={ playerTanks } setActiveTab={ this.setActiveTab } />
         { (activeTab === 'main') && <MainTab accounts={ accountsData } getAccounts={ this.getAccounts } getUser={ this.getAccData } sortAccounts={ this.sortAccounts } userData={ userData } /> }
-        { (activeTab === 'tanks') && <TanksTab activeTab={ activeTab } tanksData={ tanksData } tanksWN8={ tanksWN8 } userData={ userData } /> }
+        { (activeTab === 'tanks') && <TanksTab activeTab={ activeTab } playerTanks={ playerTanks } tanksData={ tanksData } tanksWN8={ tanksWN8 } userData={ userData } /> }
         { (activeTab === 'links') && <Links getLinks={ this.getLinks } links={ links } userData={ userData } /> }
       </div>);
   }

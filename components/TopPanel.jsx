@@ -10,7 +10,7 @@ export class TopPanel extends Component {
     ];
 
     return (
-      <div id='content'>
+      <div id='navigationWrapper'>
         <ul id='navigation'>{ tabs.map((tab) =>
           <li key={ tab.key } className={ (tab.key === activeTab) ? 'active' : 'click' } onClick={ () => setActiveTab(tab.key) }>{ tab.label }</li>
         ) }</ul>

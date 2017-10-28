@@ -7,7 +7,7 @@ import { accessToken } from '../config/config';
 export class Tank extends Component {
   render() {
     const { activeTab, tank } = this.props,
-      { id, row, image, image_small, name, short_name, level, type, in_angar, is_premium, relations, userTankData } = tank;
+      { id, row, image, image_small, name, nation, short_name, level, type, in_angar, is_premium, relations, userTankData } = tank;
     let tankWN8 = { expDamage: 0, expFrag: 0, expSpot: 0, expDef: 0, expWinRate: 0 };
     if (this.props.tankWN8) {
       tankWN8 = this.props.tankWN8;
@@ -59,20 +59,21 @@ export class Tank extends Component {
 
     return (
       <div className={ `tblock column${level} row${row}${in_garage ? ' in_angar' : ''}` } id={ `tank${id}` }>
-        <div className={ `vicLogo${image ? ' big' : ''}` }>
-          <img src={ `../data/images/${image ? image : image_small}` } />
+        <div className={ `vicLogo${(image && (image !== '')) ? ' big' : ''}` }>
+          <img src={ `../data/images/${(image && (image !== '')) ? image : image_small}` } />
         </div>
         <span className="mark">{ (short_name.length <= name.length) ? short_name : name }</span>
         <span className="level">{ level }</span>
         <span className="class">{ getTankTypeImg(type) }</span>
         { (is_premium == 1) && <span className="golden"><img src="../style/gold.png" /></span> }
         { hasUserData && (userTankData.mark_of_mastery > 0) && <span className="mastery"><img src={ `../style/class${userTankData.mark_of_mastery}.png` } /></span> }
-        { hasUserData && !!userTankData.marksOnGun && <div className={ `marksOnGun${userTankData.marksOnGun}` }></div> }
+        { hasUserData && !!userTankData.marksOnGun && <div className={ `marksOnGun marksOnGun${userTankData.marksOnGun}` }></div> }
         { hasUserData && <div className="gamerbattles">
           боёв <span className={ `ratings ${getColor('winrate', tankWinrate)}` }>{ battles }({ tankWinrate.toFixed(0) }%)</span>
           wn8 <span className={ `ratings ${getColor('wn8', wn8)}` }>{ wn8 }</span>
           dmg <span className={ `ratings ${getColor('tankDmg', avgDmg / expDmg)}` } title={ `Expected: ${expDmg.toFixed(0)}` }>{ avgDmg.toFixed(0) }</span>
         </div> }
+        <div className={ `nation ${nation}`} title={ nation }></div>
         { !hasUserData && <span className='regularTank'></span> }
         { relationsArray.map((relation, key) => <img key={ key} className={ relation.class } src={ `../style/${relation.img}` } width={ relation.width } height={ relation.height } />) }
       </div>);
