@@ -31,91 +31,113 @@ class App extends React.Component {
    * @param account {int|string} if not account_id, will try search by name
    */
   getAccData = (account) => {
-    if (/^[0-9]+$/.test(account)) {
-      // if we have an ID -> get the data
+    if (/^[0-9]+$/.test(account)) { // if we have an ID -> get the data
       localStorage.setItem('defaultAccount', account);
       fetch(`${apiUrl}account/info/${applicationId}&account_id=${account}${accessToken}`).then(resp => resp.json()).then(resp => {
-        const userData = resp.data[account];
-        fetch(`${apiUrl}tanks/stats/${applicationId}&account_id=${account}${accessToken}`).then(resp => resp.json()).then(resp => {
-          userData.tankData = {};
-          resp.data[account].forEach((tankStats) => {
-            userData.tankData[tankStats.tank_id] = Object.assign({}, tankStats);
-          });
-          fetch(`${apiUrl}tanks/achievements/${applicationId}&account_id=${account}${accessToken}`).then(resp => resp.json()).then(resp => {
-            resp.data[account].forEach((tankAchievements) => {
-              userData.tankData[tankAchievements.tank_id].marksOnGun = tankAchievements.achievements.marksOnGun;
-            });
-            console.log(`getAccData(${account}) userData`, userData);
-            // Get tanks data for trees and wn8 rating from http://stat.modxvm.com/wn8.json
-            fetch(`../api/tanks.php?account_id=${account}`, fetchHeaders).then(resp => resp.json()).then(resp => {
-              console.log('fetch api/tanks', account, resp);
-              const tanksData = resp.tanks;
-              const tanksWN8 = resp.wn8;
-              let playerTanks = 0;
-              const { statistics, tankData, account_id, nickname, global_rating } = userData,
-                { battles, wins, damage_dealt, frags, spotted, dropped_capture_points } = statistics.all,
-                winrate = wins / battles * 100,
-                averageDmg = damage_dealt / battles,
-                averageFrags = frags / battles,
-                averageSpotted = spotted / battles,
-                averageDef = dropped_capture_points / battles,
-                angar = [];
-              // подсчёт WN8
-              const expected = { frg: 0, dmg: 0, spo: 0, def: 0, win: 0, battles: 0 };
-              Object.keys(tankData).forEach((tid) => {
-                let tb = tankData[tid].all.battles;
-                if (tankData[tid].in_garage) { // if no token will always be null
-                  angar.push(tid);
-                  playerTanks++;
-                }
-                if (typeof(tanksWN8[tid]) !== "undefined") {
-                  expected['frg'] += tb * tanksWN8[tid].expFrag;
-                  expected['dmg'] += tb * tanksWN8[tid].expDamage;
-                  expected['spo'] += tb * tanksWN8[tid].expSpot;
-                  expected['def'] += tb * tanksWN8[tid].expDef;
-                  expected['win'] += tb * tanksWN8[tid].expWinRate;
-                  expected['battles'] += tb;
-                }
-              });
-              const wn8  = calcWN8( // TODO: send expected array to have less params
-                averageDmg * expected['battles'],
-                expected['dmg'],
-                averageFrags * expected['battles'],
-                expected['frg'],
-                averageSpotted * expected['battles'],
-                expected['spo'],
-                averageDef * expected['battles'],
-                expected['def'],
-                winrate * expected['battles'],
-                expected['win']
-              );
-              userData.wn8 = wn8;
-              // обновление данных по аккаунту в базе
-              this.fillAccountData({ account_id, nickname, battles, winrate, wg: global_rating, wn8, angar });
-
-              this.setState({ userData, playerTanks: (playerTanks > 0) ? playerTanks : resp.angarTanks, tanksData, tanksWN8 });
-            });
-          });
-        });
+        this.getTankStats(account, resp.data[account]);
       });
     } else {
-      fetch(`${apiUrl}account/list/${applicationId}&search=${account}`).then(resp => resp.json()).then(data => {
-        if (data.data.length > 0) {
-          let userIsFound = false;
-          data.data.forEach((userFound) => {
-            if (userFound.nickname === account) {
-              userIsFound = true;
-              this.getAccData(userFound.account_id);
-            }
-          });
-          if (!userIsFound) {
-            alert('No 100% match found! Please try again or contaсt skype: salvation131');
+      this.searchAccount(account);
+    }
+  }
+
+  searchAccount = (accountName) => {
+    fetch(`${apiUrl}account/list/${applicationId}&search=${accountName}`).then(resp => resp.json()).then(data => {
+      if (data.data.length > 0) {
+        let userIsFound = false;
+        data.data.forEach((userFound) => {
+          if (userFound.nickname === accountName) {
+            userIsFound = true;
+            this.getAccData(userFound.account_id);
           }
-        } else {
-          alert('No players found! Please contact skype: salvation131');
+        });
+        if (!userIsFound) {
+          alert('No 100% match found! Please try again or contaсt skype: salvation131');
+        }
+      } else {
+        alert('No players found! Please contact skype: salvation131');
+      }
+    });
+  }
+
+  getTankStats = (accountId, userData) => {
+    fetch(`${apiUrl}tanks/stats/${applicationId}&account_id=${accountId}${accessToken}`).then(resp => resp.json()).then(resp => {
+      userData.tankData = {};
+      if (resp.hasOwnProperty('data')) {
+        resp.data[accountId].forEach((tankStats) => {
+          userData.tankData[tankStats.tank_id] = Object.assign({}, tankStats);
+        });
+        this.getAchievements(accountId, userData);
+      } else {
+        this.getTankStats(accountId, userData);
+      }
+    });
+  }
+
+  getAchievements = (accountId, userData) => {
+    fetch(`${apiUrl}tanks/achievements/${applicationId}&account_id=${accountId}${accessToken}`).then(resp => resp.json()).then(resp => {
+      if (resp.hasOwnProperty('data')) {
+        resp.data[accountId].forEach((tankAchievements) => {
+          userData.tankData[tankAchievements.tank_id].marksOnGun = tankAchievements.achievements.marksOnGun;
+        });
+        console.log(`getAccData(${accountId}) userData`, userData);
+        this.getTanksData(accountId, userData);
+      } else {
+        this.getAchievements(accountId, userData);
+      }
+    });
+  }
+
+  getTanksData = (accountId, userData) => {
+    // Get tanks data for trees and wn8 rating from https://stat.modxvm.com/wn8-data-exp/json/wn8exp.json
+    fetch(`../api/tanks.php?account_id=${accountId}`, fetchHeaders).then(resp => resp.json()).then(resp => {
+      console.log(`fetch api/tanks for account ${accountId}`, resp);
+      const tanksData = resp.tanks;
+      const tanksWN8 = resp.wn8;
+      let playerTanks = 0;
+      const { statistics, tankData, account_id, nickname, global_rating } = userData,
+        { battles, wins, damage_dealt, frags, spotted, dropped_capture_points } = statistics.all,
+        winrate = wins / battles * 100,
+        averageDmg = damage_dealt / battles,
+        averageFrags = frags / battles,
+        averageSpotted = spotted / battles,
+        averageDef = dropped_capture_points / battles,
+        angar = [];
+      // подсчёт WN8
+      const expected = { frg: 0, dmg: 0, spo: 0, def: 0, win: 0, battles: 0 };
+      Object.keys(tankData).forEach((tid) => {
+        let tb = tankData[tid].all.battles;
+        if (tankData[tid].in_garage) { // if no token will always be null
+          angar.push(tid);
+          playerTanks++;
+        }
+        if (typeof(tanksWN8[tid]) !== "undefined") {
+          expected['frg'] += tb * tanksWN8[tid].expFrag;
+          expected['dmg'] += tb * tanksWN8[tid].expDamage;
+          expected['spo'] += tb * tanksWN8[tid].expSpot;
+          expected['def'] += tb * tanksWN8[tid].expDef;
+          expected['win'] += tb * tanksWN8[tid].expWinRate;
+          expected['battles'] += tb;
         }
       });
-    }
+      const wn8  = calcWN8( // TODO: send expected array to have less params
+        averageDmg * expected['battles'],
+        expected['dmg'],
+        averageFrags * expected['battles'],
+        expected['frg'],
+        averageSpotted * expected['battles'],
+        expected['spo'],
+        averageDef * expected['battles'],
+        expected['def'],
+        winrate * expected['battles'],
+        expected['win']
+      );
+      userData.wn8 = wn8;
+      // обновление данных по аккаунту в базе
+      this.fillAccountData({ account_id, nickname, battles, winrate, wg: global_rating, wn8, angar });
+
+      this.setState({ userData, playerTanks: (playerTanks > 0) ? playerTanks : resp.angarTanks, tanksData, tanksWN8 });
+    });
   }
 
   /**

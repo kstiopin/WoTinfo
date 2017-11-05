@@ -21,7 +21,7 @@ while ($tank = mysql_fetch_assoc($wiki_tanks)) {
 /** GET THE WN8 DATA **/
 $ch = curl_init();
 // set the url, number of POST vars, POST data
-curl_setopt($ch, CURLOPT_URL, 'http://stat.modxvm.com/wn8.json');
+curl_setopt($ch, CURLOPT_URL, 'https://stat.modxvm.com/wn8-data-exp/json/wn8exp.json');
 curl_setopt($ch, CURLOPT_POST, 0);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 // execute post
@@ -35,29 +35,31 @@ foreach ($data as $tank) {
 $result['log'] = [];
 $r = mysql_query("SELECT * FROM wn8_tanks") or die(mysql_error());
 while ($f = mysql_fetch_assoc($r)) {
-    if ($f['type'] === '=') {
-        $result['wn8'][$f['target']] = $result['wn8'][$f['source']];
-        $msg = $tankNames[$f['target']]." from ".$tankNames[$f['source']];
-    } else if ($f['type'] === 'avg') {
-        $result['wn8'][$f['target']] = [
-            'expFrag' => ($result['wn8'][$f['prev']]['expFrag'] + $result['wn8'][$f['next']]['expFrag']) / 2,
-            'expDamage' => ($result['wn8'][$f['prev']]['expDamage'] + $result['wn8'][$f['next']]['expDamage']) / 2,
-            'expSpot' => ($result['wn8'][$f['prev']]['expSpot'] + $result['wn8'][$f['next']]['expSpot']) / 2,
-            'expDef' => ($result['wn8'][$f['prev']]['expDef'] + $result['wn8'][$f['next']]['expDef']) / 2,
-            'expWinRate' => ($result['wn8'][$f['prev']]['expWinRate'] + $result['wn8'][$f['next']]['expWinRate']) / 2,
-        ];
-        $msg = $tankNames[$f['target']]." from avg between ".$tankNames[$f['prev']]." and ".$tankNames[$f['next']];
-    } else if ($f['type'] === 'diff') {
-        $result['wn8'][$f['target']] = [
-            'expFrag' => $result['wn8'][$f['next']]['expFrag'] * $result['wn8'][$f['next']]['expFrag'] / $result['wn8'][$f['prev']]['expFrag'],
-            'expDamage' => $result['wn8'][$f['next']]['expDamage'] * $result['wn8'][$f['next']]['expDamage'] / $result['wn8'][$f['prev']]['expDamage'],
-            'expSpot' => $result['wn8'][$f['next']]['expSpot'] * $result['wn8'][$f['next']]['expSpot'] / $result['wn8'][$f['prev']]['expSpot'],
-            'expDef' => $result['wn8'][$f['next']]['expDef'] * $result['wn8'][$f['next']]['expDef'] / $result['wn8'][$f['prev']]['expDef'],
-            'expWinRate' => $result['wn8'][$f['next']]['expWinRate'] * $result['wn8'][$f['next']]['expWinRate'] / $result['wn8'][$f['prev']]['expWinRate'],
-        ];
-        $msg = $tankNames[$f['target']]." based on difference between ".$tankNames[$f['prev']]." and ".$tankNames[$f['next']];
+    if (!array_key_exists($f['target'], $result['wn8'])) {
+        if ($f['type'] === '=') {
+            $result['wn8'][$f['target']] = $result['wn8'][$f['source']];
+            $msg = $tankNames[$f['target']]." from ".$tankNames[$f['source']];
+        } else if ($f['type'] === 'avg') {
+            $result['wn8'][$f['target']] = [
+                'expFrag' => ($result['wn8'][$f['prev']]['expFrag'] + $result['wn8'][$f['next']]['expFrag']) / 2,
+                'expDamage' => ($result['wn8'][$f['prev']]['expDamage'] + $result['wn8'][$f['next']]['expDamage']) / 2,
+                'expSpot' => ($result['wn8'][$f['prev']]['expSpot'] + $result['wn8'][$f['next']]['expSpot']) / 2,
+                'expDef' => ($result['wn8'][$f['prev']]['expDef'] + $result['wn8'][$f['next']]['expDef']) / 2,
+                'expWinRate' => ($result['wn8'][$f['prev']]['expWinRate'] + $result['wn8'][$f['next']]['expWinRate']) / 2,
+            ];
+            $msg = $tankNames[$f['target']]." from avg between ".$tankNames[$f['prev']]." and ".$tankNames[$f['next']];
+        } else if ($f['type'] === 'diff') {
+            $result['wn8'][$f['target']] = [
+                'expFrag' => $result['wn8'][$f['next']]['expFrag'] * $result['wn8'][$f['next']]['expFrag'] / $result['wn8'][$f['prev']]['expFrag'],
+                'expDamage' => $result['wn8'][$f['next']]['expDamage'] * $result['wn8'][$f['next']]['expDamage'] / $result['wn8'][$f['prev']]['expDamage'],
+                'expSpot' => $result['wn8'][$f['next']]['expSpot'] * $result['wn8'][$f['next']]['expSpot'] / $result['wn8'][$f['prev']]['expSpot'],
+                'expDef' => $result['wn8'][$f['next']]['expDef'] * $result['wn8'][$f['next']]['expDef'] / $result['wn8'][$f['prev']]['expDef'],
+                'expWinRate' => $result['wn8'][$f['next']]['expWinRate'] * $result['wn8'][$f['next']]['expWinRate'] / $result['wn8'][$f['prev']]['expWinRate'],
+            ];
+            $msg = $tankNames[$f['target']]." based on difference between ".$tankNames[$f['prev']]." and ".$tankNames[$f['next']];
+        }
+        $result['log'][$f['target']] = ["added wn8 data (".$f['type'].") for ".$msg, $result['wn8'][$f['target']]];
     }
-    $result['log'][$f['target']] = ["added wn8 data (".$f['type'].") for ".$msg, $result['wn8'][$f['target']]];
 }
 
 die(json_encode($result));
