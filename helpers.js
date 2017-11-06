@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { colorScales, scaleColors } from './config/config';
+
 /**
  * Get color for specific type of stats
  * @param type {string}
@@ -7,29 +9,9 @@ import React from 'react';
  * @return class color {string}
  */
 export function getColor(type, value) {
-  let color = 'red';
-  const types = {
-    wn8: [2980, 2232, 1490, 915, 398],
-    wg: [10175, 8730, 6515, 4435, 3000],
-    winrate: [64.20, 57.91, 52.46, 49.11, 46.37],
-    battles: [20000, 14000, 10000, 7000, 4000],
-    exp: [1200, 1100, 800, 600, 450],
-    dmg: [2500, 1800, 1000, 750, 500],
-    tankDmg: [1.7, 1.4, 1.1, 0.7, 0.5],
-  };
-  if (value >= types[type][0]) {
-    color = 'violet';
-  } else if (value >= types[type][1]) {
-    color = 'teal';
-  } else if (value >= types[type][2]) {
-    color = 'green';
-  } else if (value >= types[type][3]) {
-    color = 'yellow';
-  } else if (value >= types[type][4]) {
-    color = 'orange';
-  }
+  const colorIndex = colorScales[type].findIndex(scale => (value >= scale));
 
-  return color;
+  return scaleColors[(colorIndex > -1) ? colorIndex : (scaleColors.length - 1)];
 }
 
 /**
