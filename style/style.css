@@ -213,9 +213,10 @@ li.active {
     cursor: pointer;
     color: #f25322;
 }
-#other_requests > table { margin-top: 20px; }
-#other_requests > table th, #other_requests > table td { padding: 10px; }
-#other_requests > table td > span { cursor: pointer; color: #3e6590; }
+#accounts { margin-top: 20px; }
+#accounts th,
+#accounts td { padding: 10px; }
+#accounts td > span { cursor: pointer; color: #3e6590; }
 
 /* tanks tab */
 #tanksWrapper {
@@ -540,9 +541,10 @@ span.percent { position: relative; }
     width: 999px;
     padding-top: 30px;
     padding-bottom: 30px;
+    display: flex;
+    flex-direction: column;
 }
 #links > a {
-    display: block;
     margin-bottom: 20px;
 }
 #links > a > h2 {
@@ -552,16 +554,35 @@ span.percent { position: relative; }
     color: #979899;
 }
 
+/* Color Scales */
+#colorScales > h2 {
+    color: #ffd700;
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+#colorScales table th,
+#colorScales table td {
+    padding: 10px 15px;
+    border: 1px solid;
+}
+
 /* common styles */
 .clear { clear: both; }
 .pointer { cursor: pointer; margin-left: 20px; }
 .hidden { display: none; }
+.flex-row { display: flex; flex-direction: row; }
 .red { color: #f11919; }
 .orange { color: #fa6800; }
 .yellow { color: #c6bf1f; }
 .green { color: #4A9C02; }
 .teal { color: #25c2dd; }
 .violet { color: #c64cff; }
+.bg_red { background-color: #f11919; color: black; }
+.bg_orange { background-color: #fa6800; color: black; }
+.bg_yellow { background-color: #c6bf1f; color: black; }
+.bg_green { background-color: #4A9C02; color: black; }
+.bg_teal { background-color: #25c2dd; color: black; }
+.bg_violet { background-color: #c64cff; color: black; }
 /* buttons */
 .button {
     cursor: pointer;

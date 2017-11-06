@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+import ColorScales from './ColorScales.jsx';
+
 export class Links extends Component {
   componentWillMount() {
     const { getLinks, links } = this.props;
@@ -19,8 +21,9 @@ export class Links extends Component {
         <a href={ link.link.replace('$nickname', userData.nickname).replace('$account', userData.account_id) } key={ link.id } target='_blank'>
           <h2>{ link.name }</h2>
           <span>{ link.text }</span>
-        </a>
-      ) }</div>);
+        </a>) }
+        <ColorScales />
+      </div>);
   }
 }
 

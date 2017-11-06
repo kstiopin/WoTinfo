@@ -4,6 +4,8 @@ import { getColor } from '../helpers';
 
 import { apiUrl, applicationId, defaultStatsTab } from '../config/config';
 
+import ColorScales from './ColorScales.jsx';
+
 export class MainTab extends Component {
   state = { showAccounts: false, activeTab: defaultStatsTab }
 
@@ -84,28 +86,31 @@ export class MainTab extends Component {
           </div>
           <div id='other_requests'>
             <span onClick={ this.toggleAccounts }>Другие игроки</span>
-            { showAccounts && accounts && <table>
-              <thead>
-                <tr>
-                  <th className='pointer' onClick={ () => sortAccounts('nickname') }>Name</th>
-                  <th className='pointer' onClick={ () => sortAccounts('battles') }>Battles</th>
-                  <th className='pointer' onClick={ () => sortAccounts('winrate') }>WR</th>
-                  <th className='pointer' onClick={ () => sortAccounts('wg') }>WG</th>
-                  <th className='pointer' onClick={ () => sortAccounts('wn8') }>WN8</th>
-                  <th>Tanks in angar</th>
-                </tr>
-              </thead>
-              <tbody>
-                { accounts.map((account) => (<tr key={ account.account_id }>
-                  <td><span onClick={ () => { this.toggleAccounts(); getUser(account.account_id); } }>{ account.nickname }</span></td>
-                  <td className={ getColor('battles', account.battles) }>{ account.battles }</td>
-                  <td className={ getColor('winrate', account.winrate) }>{ account.winrate }</td>
-                  <td className={ getColor('wg', account.wg) }>{ account.wg }</td>
-                  <td className={ getColor('wn8', account.wn8) }>{ account.wn8 }</td>
-                  <td className="green">{ account.angar ? account.angar.split(',').length : '' }</td>
-                </tr>)) }
-              </tbody>
-            </table> }
+            { showAccounts && accounts && <div className='flex-row'>
+              <table id='accounts'>
+                <thead>
+                  <tr>
+                    <th className='pointer' onClick={ () => sortAccounts('nickname') }>Name</th>
+                    <th className='pointer' onClick={ () => sortAccounts('battles') }>Battles</th>
+                    <th className='pointer' onClick={ () => sortAccounts('winrate') }>WR</th>
+                    <th className='pointer' onClick={ () => sortAccounts('wg') }>WG</th>
+                    <th className='pointer' onClick={ () => sortAccounts('wn8') }>WN8</th>
+                    <th>Tanks in angar</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  { accounts.map((account) => (<tr key={ account.account_id }>
+                    <td><span onClick={ () => { this.toggleAccounts(); getUser(account.account_id); } }>{ account.nickname }</span></td>
+                    <td className={ getColor('battles', account.battles) }>{ account.battles }</td>
+                    <td className={ getColor('winrate', account.winrate) }>{ account.winrate }</td>
+                    <td className={ getColor('wg', account.wg) }>{ account.wg }</td>
+                    <td className={ getColor('wn8', account.wn8) }>{ account.wn8 }</td>
+                    <td className="green">{ account.angar ? account.angar.split(',').length : '' }</td>
+                  </tr>)) }
+                </tbody>
+              </table>
+              <ColorScales />
+            </div> }
           </div>
         </div>
         <div className='clear'></div>
