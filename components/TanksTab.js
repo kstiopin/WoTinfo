@@ -24,7 +24,11 @@ export class TanksTab extends Component {
   render() {
     const { tanksData,  playerTanks, tanksWN8, userData } = this.props;
     const { activeNation } = this.state;
-
+    // console.log('TanksTab', 'RENDER', { tanksData,  playerTanks, tanksWN8, userData });
+    /* Object.keys(userData.tankData).forEach(tankId => {
+      const tank = tanksData.find(tank => tank.id === tankId);
+      console.log(`user ${userData.account_id}, tank ${tankId}`, { tank, name: tank ? tank.name : 'NOT FOUND!' });
+    }); */
     const levels = { 10: 'X', 9: 'IX', 8: 'VIII', 7: 'VII', 6: 'VI', 5: 'V', 4: 'IV', 3: 'III', 2: 'II', 1: 'I' };
     const nations = [
       { key: 'ussr', label: 'СССР'},
