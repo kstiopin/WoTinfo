@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import ColorScales from './ColorScales.jsx';
+import ColorScales from './ColorScales';
 
 export class Links extends Component {
   componentWillMount() {

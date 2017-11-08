@@ -4,7 +4,7 @@ import { getColor } from '../helpers';
 
 import { apiUrl, applicationId, defaultStatsTab } from '../config/config';
 
-import ColorScales from './ColorScales.jsx';
+import ColorScales from './ColorScales';
 
 export class MainTab extends Component {
   state = { showAccounts: false, activeTab: defaultStatsTab }

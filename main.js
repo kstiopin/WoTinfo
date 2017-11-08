@@ -1,16 +1,16 @@
-import React from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
-import TanksTab from './components/TanksTab.jsx';
-import TopPanel from './components/TopPanel.jsx';
-import Links from './components/Links.jsx';
-import MainTab from './components/MainTab.jsx';
+import TanksTab from './components/TanksTab';
+import TopPanel from './components/TopPanel';
+import Links from './components/Links';
+import MainTab from './components/MainTab';
 
 import { calcWN8 } from './helpers';
 
 import { accountId, accessToken, apiUrl, applicationId, fetchHeaders } from './config/config';
 
-class App extends React.Component {
+class App extends Component {
   state = {
     activeTab: 'main',
     playerTanks: 0,

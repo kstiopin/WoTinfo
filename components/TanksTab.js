@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Tank from './Tank.jsx';
+import Tank from './Tank';
 
 export class TanksTab extends Component {
   state = { activeNation: 'ussr' }
