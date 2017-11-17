@@ -115,8 +115,7 @@ li.active {
 }
 .b-header-h1__profile {
     cursor: default;
-    margin-bottom: 0;
-    padding-bottom: 7px;
+    margin-bottom: 0!important;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -127,13 +126,6 @@ li.active {
     top: 0;
     z-index: 5;
 }
-#authorize {
-    position: absolute;
-    top: 60px;
-    left: 0;
-    white-space: nowrap;
-}
-.b-userblock-wrpr { margin: 0 0 37px 0; }
 .b-user-block {
     background: #121315;
     background: rgba(0,0,0,0.05);
@@ -206,12 +198,23 @@ li.active {
     vertical-align: top;
 }
 /* main tab - другие игроки */
-#other_requests { padding: 10px 20px 30px; }
-#other_requests > span {
-    font-size: 32px;
+#other_requests {
+    padding: 10px 20px 30px;
+    margin: 0 auto;
+    width: 1250px;
+}
+#other_requests .flex-row {
+    justify-content: space-between;
+}
+#other_requests .top-line a,
+#other_requests .top-line span {
+    font-size: 24px;
     font-weight: bolder;
     cursor: pointer;
     color: #f25322;
+}
+#other_requests #colorScales {
+    margin-top: 25px;
 }
 #accounts { margin-top: 20px; }
 #accounts th,
