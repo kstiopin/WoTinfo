@@ -21,7 +21,7 @@ while ($tank = mysql_fetch_assoc($wiki_tanks)) {
 /** GET THE WN8 DATA **/
 $ch = curl_init();
 // set the url, number of POST vars, POST data
-curl_setopt($ch, CURLOPT_URL, 'https://stat.modxvm.com/wn8-data-exp/json/wn8exp.json');
+curl_setopt($ch, CURLOPT_URL, 'https://static.modxvm.com/wn8-data-exp/json/wn8exp.json');
 curl_setopt($ch, CURLOPT_POST, 0);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 // execute post
