@@ -54,7 +54,7 @@ const Tank = ({ activeTab, tank, tankWN8 }) => {
   return (
     <div className={ `tblock column${level} row${row}${in_garage ? ' in_angar' : ''}` } id={ `tank${id}` }>
       <div className={ `vicLogo${(image && (image !== '')) ? ' big' : ''}` }>
-        <img src={ `../data/images/${(image && (image !== '')) ? image : image_small}` } />
+        <img src={ (image.indexOf('http') > -1) ? image : `../data/images/${(image && (image !== '')) ? image : image_small}` } />
       </div>
       <span className="mark">{ (short_name.length <= name.length) ? short_name : name }</span>
       <span className="level">{ level }</span>

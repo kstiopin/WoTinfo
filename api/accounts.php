@@ -21,7 +21,7 @@ if (isset($_POST['account_id'])) {
     die($_POST['account_id']);
 } else {
     $result = [];
-    $r = mysql_query('SELECT * FROM wot_data') or die(mysql_error());
+    $r = mysql_query('SELECT * FROM wot_data WHERE battles >= 100') or die(mysql_error());
     while ($f = mysql_fetch_assoc($r)) {
         $result[$f['account_id']] = $f;
     }
