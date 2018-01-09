@@ -11,6 +11,8 @@ const colorScalesLabels = {
   dmg: 'Average DMG',
 };
 
+const renderScale = (scale, rating) => ((rating === 'winrate') ? (scale - 0.01).toFixed(2) : (scale - 1));
+
 const ColorScales = () => (<div id='colorScales'>
   <h2>Цветовая шкала</h2>
   <table>
@@ -18,9 +20,9 @@ const ColorScales = () => (<div id='colorScales'>
       { Object.keys(colorScalesLabels).map(rating => <tr key={ rating }>
         <td>{ colorScalesLabels[rating] }</td>
         { colorScales[rating].map((scale, index) => <td className={ `bg_${scaleColors[index]}` } key={ scale }>
-          { (index === 0) ? `${scale}+` : <span>{ colorScales[rating][index - 1] - ((rating === 'winrate') ? 0.01 : 1) }&nbsp;&mdash;&nbsp;{ scale }</span> }
+          { (index === 0) ? `${scale}+` : <span>{ renderScale(colorScales[rating][index - 1], rating) }&nbsp;&mdash;&nbsp;{ scale }</span> }
         </td>) }
-        <td className='bg_red'>{ (colorScales[rating][colorScales[rating].length - 1] - ((rating === 'winrate') ? 0.01 : 1)).toFixed(2) }&nbsp;&mdash;&nbsp;0</td>
+        <td className='bg_red'>{ renderScale(colorScales[rating][colorScales[rating].length - 1], rating) }&nbsp;&mdash;&nbsp;0</td>
       </tr>) }
     </tbody>
   </table>
