@@ -5,7 +5,7 @@ import { calcWN8, getColor, getTankTypeImg } from '../helpers';
 import { accessToken } from '../config/config';
 
 const Tank = ({ activeTab, tank, tankWN8 }) => {
-  const { id, row, image, image_small, name, nation, short_name, level, type, in_angar, is_premium, relations, userTankData } = tank;
+  const { id, image, image_small, in_angar, is_premium, level, name, nation, relations, row, short_name, type, userTankData, wiki_image } = tank;
   let hasUserData = false,
     battles,
     tankWinrate,
@@ -53,8 +53,12 @@ const Tank = ({ activeTab, tank, tankWN8 }) => {
 
   return (
     <div className={ `tblock column${level} row${row}${in_garage ? ' in_angar' : ''}` } id={ `tank${id}` }>
-      <div className={ `vicLogo${(image && (image !== '')) ? ' big' : ''}` }>
-        <img src={ (image.indexOf('http') > -1) ? image : `../data/images/${(image && (image !== '')) ? image : image_small}` } />
+      <div className={ `vicLogo${((image && (image !== '')) || (wiki_image && (wiki_image.length > 0))) ? ' big' : ''}` }>
+        <img src={ (wiki_image && (wiki_image.length > 0))
+          ? `http://api.worldoftanks.ru/static/2.59.0/wot/encyclopedia/vehicle/${wiki_image}.png`
+          : ((image.indexOf('http') > -1)
+            ? image
+            : `../data/images/${(image && (image !== '')) ? image : image_small}`) } />
       </div>
       <span className="mark">{ (short_name.length <= name.length) ? short_name : name }</span>
       <span className="level">{ level }</span>
@@ -68,7 +72,7 @@ const Tank = ({ activeTab, tank, tankWN8 }) => {
         dmg <span className={ `ratings ${getColor('tankDmg', avgDmg / expDmg)}` } title={ `Expected: ${expDmg.toFixed(0)}` }>{ avgDmg.toFixed(0) }</span>
       </div> }
       <div className={ `nation ${nation}`} title={ nation }></div>
-      { !hasUserData && <span className='regularTank'></span> }
+      { !hasUserData && <span className='regularTank' /> }
       { relationsArray.map((relation, key) => <img key={ key} className={ relation.class } src={ `../style/${relation.img}` } width={ relation.width } height={ relation.height } />) }
     </div>);
 }

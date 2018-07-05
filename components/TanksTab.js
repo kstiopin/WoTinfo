@@ -24,6 +24,7 @@ export class TanksTab extends Component {
   render() {
     const { tanksData,  playerTanks, tanksWN8, userData } = this.props;
     const { activeNation } = this.state;
+    const nationMax = (activeNation === 'ussr') ? 12 : 11;
     // console.log('TanksTab', 'RENDER', { tanksData,  playerTanks, tanksWN8, userData });
     /* Object.keys(userData.tankData).forEach(tankId => {
       const tank = tanksData.find(tank => tank.id === tankId);
@@ -40,7 +41,8 @@ export class TanksTab extends Component {
       { key: 'japan', label: 'Япония'},
       { key: 'czech', label: 'Чехия'},
       { key: 'poland', label: 'Польша'},
-      { key: 'sweden', label: 'Швеция'}
+      { key: 'sweden', label: 'Швеция'},
+      { key: 'italy', label: 'Италия'}
     ];
     let tanksToAdd = [];
     const angarTanks = {};
@@ -58,9 +60,9 @@ export class TanksTab extends Component {
           }
           addData.row = maxRows[level]++;
           tanksToAdd.push(Object.assign({}, tank, addData));
-        } else if (row > 11) {
+        } else if (row > nationMax) {
           if (!maxRows.hasOwnProperty(level)) {
-            maxRows[level] = 12;
+            maxRows[level] = nationMax + 1;
           }
           if (userTankData) {
             addData.row = maxRows[level]++;
@@ -96,7 +98,7 @@ export class TanksTab extends Component {
             </div>
           </div> ) }
         </div> : <div className='nationTree' id='ntree'>
-          <div className='treeWrapper'>
+          <div className={ `treeWrapper ${activeNation}` }>
             <div className='levelLine' style={ { left: '0' } }></div>
             <div className='levelLine' style={ { left: '324px' } }></div>
             <div className='levelLine' style={ { left: '648px' } }></div>
