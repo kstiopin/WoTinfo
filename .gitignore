@@ -1,0 +1,6 @@
+/.idea
+/data/wn8.json
+/config/config.php
+/dist
+/node_modules
+/*.log
